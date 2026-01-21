@@ -1123,10 +1123,23 @@
           <h3>Você merece viver um relacionamento saudável e excepcional.</h3>
           <p>Autoconhecimento não é sobre saber mais. É sobre se relacionar melhor consigo e com o outro.</p>
 
-          <a class="pill btn-primary" href="https://wa.me/5512981402217?text=Quero%20come%C3%A7ar%20a%20minha%20jornada"
-            target="_blank" rel="noopener" aria-label="Começar transformação no WhatsApp">
-            QUERO COMEÇAR MINHA TRANSFORMAÇÃO
-          </a>
+          <div class="cta-pair">
+            <!-- ✅ CHECKOUT (Hotmart) -->
+            <a class="pill btn-primary"
+               href="https://pay.hotmart.com/SEU_CHECKOUT_AQUI"
+               data-hotmart-checkout
+               aria-label="Ir para o checkout">
+              QUERO GARANTIR MINHA VAGA
+            </a>
+
+            <!-- WhatsApp (opção secundária) -->
+            <a class="pill btn-secondary"
+               href="https://wa.me/5512981402217?text=Quero%20come%C3%A7ar%20a%20minha%20jornada"
+               target="_blank" rel="noopener"
+               aria-label="Falar no WhatsApp">
+              FALAR NO WHATSAPP
+            </a>
+          </div>
         </div>
       </div>
     </section>
@@ -1207,6 +1220,10 @@
         <div class="lead-success" id="successMsg">
           ✨ Obrigado! <br>
           Em breve entraremos em contato com você.
+        </div>
+
+        <div class="lead-hint">
+          Ao enviar, seus dados serão registrados no seu Google Forms.
         </div>
       </form>
     </div>
@@ -1316,6 +1333,55 @@
           submitBtn.textContent = originalText;
         }
       });
+    })();
+  </script>
+
+
+  <script>
+    /**
+     * HOTMART CHECKOUT
+     * 1) Troque HOTMART_CHECKOUT_BASE pela URL do seu checkout Hotmart (ex.: https://pay.hotmart.com/XXXXX)
+     * 2) Opcional: se você usa parâmetros específicos, adicione aqui.
+     *
+     * Este script preserva UTMs da URL (utm_source, utm_medium, utm_campaign, utm_content, utm_term)
+     * e repassa para o checkout via querystring.
+     */
+    (function () {
+      const HOTMART_CHECKOUT_BASE = "https://pay.hotmart.com/SEU_CHECKOUT_AQUI";
+
+      const UTM_KEYS = ["utm_source","utm_medium","utm_campaign","utm_content","utm_term"];
+      const qs = new URLSearchParams(window.location.search);
+
+      function withUTM(url) {
+        try {
+          const u = new URL(url);
+          UTM_KEYS.forEach(k => {
+            const v = qs.get(k);
+            if (v && !u.searchParams.get(k)) u.searchParams.set(k, v);
+          });
+          return u.toString();
+        } catch (e) {
+          // Se não for URL absoluta, retorna como veio
+          return url;
+        }
+      }
+
+      function goCheckout(customUrl) {
+        const target = customUrl || HOTMART_CHECKOUT_BASE;
+        window.location.href = withUTM(target);
+      }
+
+      // Bind automático: qualquer elemento com data-hotmart-checkout abre o checkout
+      document.addEventListener("click", (e) => {
+        const el = e.target.closest("[data-hotmart-checkout]");
+        if (!el) return;
+        e.preventDefault();
+        const customUrl = el.getAttribute("data-hotmart-checkout-url") || null;
+        goCheckout(customUrl);
+      });
+
+      // Exponha para uso opcional em onclick=""
+      window.goHotmartCheckout = goCheckout;
     })();
   </script>
 
