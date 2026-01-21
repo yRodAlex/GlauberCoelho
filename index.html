@@ -220,6 +220,23 @@
       border-color: rgba(58, 39, 95, .18);
       color: var(--deep);
     }
+    /* Header CTA (Hotmart) */
+    .nav-cta {
+      min-width: auto;
+      min-height: 44px;
+      padding: 10px 16px;
+      font-size: 13px;
+      box-shadow: 0 12px 24px rgba(58, 39, 95, .22);
+      white-space: nowrap;
+    }
+    @media (max-width: 900px) {
+      .nav-cta {
+        width: 100%;
+        justify-content: center;
+        min-height: 48px;
+      }
+    }
+
 
     /* Hero */
     main {
@@ -883,6 +900,7 @@
         <a href="#como-funciona" data-target="como-funciona">Como Funciona</a>
         <a href="#facilitador" data-target="facilitador">Facilitador</a>
       </div>
+      <a class="pill btn-primary nav-cta" id="navCheckoutTop" href="https://pay.hotmart.com/SEU_CHECKOUT_AQUI" target="_blank" rel="noopener">Garantir minha vaga</a>
     </div>
   </header>
 
@@ -1382,6 +1400,33 @@
 
       // Exponha para uso opcional em onclick=""
       window.goHotmartCheckout = goCheckout;
+    })();
+  </script>
+
+
+  <script>
+    // Propaga UTMs/params da URL para links do Hotmart (pay.hotmart.com) automaticamente
+    (function () {
+      const params = new URLSearchParams(window.location.search);
+      if ([...params.keys()].length === 0) return;
+
+      function isHotmart(url) {
+        try { return new URL(url, window.location.href).hostname.includes('hotmart'); }
+        catch { return false; }
+      }
+
+      document.querySelectorAll('a[href]').forEach(a => {
+        const href = a.getAttribute('href');
+        if (!href) return;
+        if (!href.includes('hotmart') && !href.includes('pay.hotmart.com')) return;
+        if (!isHotmart(href)) return;
+
+        const u = new URL(href, window.location.href);
+        params.forEach((v, k) => {
+          if (!u.searchParams.has(k)) u.searchParams.set(k, v);
+        });
+        a.setAttribute('href', u.toString());
+      });
     })();
   </script>
 
