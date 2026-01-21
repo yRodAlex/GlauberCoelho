@@ -637,15 +637,20 @@
       .brand {
         display: none;
       }
+
+      /* modal padding menor no mobile */
+      .lead-modal {
+        padding: 18px 16px;
+      }
     }
 
     /* =========================================================
-       MODAL DO GOOGLE FORM (nova funcionalidade)
+       MODAL DO FORM (visual mais bonito + envio via Google Forms)
        ========================================================= */
-    .modal-backdrop {
+    .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, .55);
+      background: rgba(20, 10, 40, .55);
       backdrop-filter: blur(6px);
       display: none;
       align-items: center;
@@ -654,63 +659,216 @@
       padding: 18px;
     }
 
-    .modal-backdrop.is-open {
+    .modal-overlay.is-open {
       display: flex;
     }
 
-    .modal {
-      width: min(920px, 100%);
-      height: min(82vh, 780px);
-      background: var(--ice);
-      border-radius: 18px;
-      border: 1px solid rgba(58, 39, 95, .18);
-      box-shadow: 0 22px 60px rgba(0, 0, 0, .35);
-      overflow: hidden;
-      display: grid;
-      grid-template-rows: auto 1fr;
+    .lead-modal {
+      background: rgba(249, 249, 251, .98);
+      border-radius: 22px;
+      width: min(680px, 94%);
+      max-height: min(86vh, 760px);
+      padding: 22px 22px 18px;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, .35);
+      border: 1px solid rgba(58, 39, 95, .16);
+      overflow: auto;
+      position: relative;
     }
 
-    .modal-header {
+    .lead-modal .top {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
-      gap: 12px;
-      padding: 14px 16px;
-      background: linear-gradient(135deg, rgba(58, 39, 95, .10), rgba(114, 136, 169, .10));
-      border-bottom: 1px solid rgba(58, 39, 95, .12);
+      gap: 14px;
+      margin-bottom: 14px;
     }
 
-    .modal-title {
+    .lead-modal h3 {
       margin: 0;
-      font-weight: 800;
+      font-family: "Playfair Display", serif;
       color: var(--deep);
+      font-size: 26px;
+      line-height: 1.1;
     }
 
-    .modal-close {
+    .lead-modal p {
+      margin: 8px 0 0;
+      color: rgba(36, 26, 56, .78);
+      max-width: 56ch;
+    }
+
+    .lead-close {
       border: 0;
       background: rgba(58, 39, 95, .10);
       color: var(--deep);
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
       cursor: pointer;
       font-size: 18px;
       line-height: 1;
+      flex: 0 0 auto;
     }
 
-    .modal-close:hover {
+    .lead-close:hover {
       background: rgba(58, 39, 95, .16);
     }
 
-    .modal-body {
-      background: var(--ice);
+    .lead-form {
+      display: grid;
+      gap: 12px;
+      margin-top: 6px;
     }
 
-    .modal-body iframe {
+    .lead-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .lead-field label {
+      display: block;
+      font-size: 13px;
+      font-weight: 800;
+      color: rgba(58, 39, 95, .88);
+      margin: 0 0 6px;
+    }
+
+    .lead-field input,
+    .lead-field textarea {
+      width: 100%;
+      padding: 14px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(58, 39, 95, .20);
+      background: rgba(255, 255, 255, .92);
+      font-size: 14px;
+      font-family: Inter, sans-serif;
+      outline: none;
+      transition: border-color .16s ease, box-shadow .16s ease;
+    }
+
+    .lead-field input:focus,
+    .lead-field textarea:focus {
+      border-color: rgba(58, 39, 95, .42);
+      box-shadow: 0 0 0 4px rgba(58, 39, 95, .10);
+    }
+
+    .lead-field textarea {
+      resize: vertical;
+      min-height: 92px;
+    }
+
+    .segmented {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 2px;
+    }
+
+    .segmented input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .segmented label {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(58, 39, 95, .22);
+      background: rgba(58, 39, 95, .05);
+      font-weight: 800;
+      color: rgba(58, 39, 95, .86);
+      cursor: pointer;
+      user-select: none;
+      transition: transform .16s ease, background .16s ease, border-color .16s ease, color .16s ease, box-shadow .16s ease;
+      min-height: 44px;
+      text-align: center;
+    }
+
+    .segmented label:hover {
+      transform: translateY(-1px);
+      background: rgba(58, 39, 95, .08);
+      border-color: rgba(58, 39, 95, .32);
+    }
+
+    .segmented input:checked + span {
+      background: rgba(58, 39, 95, .10);
+      border-color: rgba(58, 39, 95, .50);
+      color: var(--deep);
+      box-shadow: 0 10px 22px rgba(20, 10, 40, .10);
+    }
+
+    .segmented span {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       width: 100%;
       height: 100%;
-      border: 0;
-      display: block;
+      border-radius: 999px;
+      padding: 12px 10px;
+      border: 1px solid transparent;
+    }
+
+    .lead-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 6px;
+    }
+
+    .lead-actions .pill {
+      min-width: 220px;
+    }
+
+    .lead-hint {
+      margin-top: 10px;
+      font-size: 13px;
+      color: rgba(36, 26, 56, .70);
+      text-align: center;
+    }
+
+    .lead-success {
+      display: none;
+      text-align: center;
+      padding: 18px 12px;
+      border-radius: 18px;
+      border: 1px solid rgba(58, 39, 95, .14);
+      background: rgba(58, 39, 95, .06);
+      color: rgba(36, 26, 56, .92);
+      font-weight: 800;
+      margin-top: 10px;
+    }
+
+    .lead-error {
+      display: none;
+      text-align: center;
+      padding: 12px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(160, 40, 60, .22);
+      background: rgba(160, 40, 60, .06);
+      color: rgba(120, 20, 40, .92);
+      font-weight: 700;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 640px) {
+      .lead-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .segmented {
+        grid-template-columns: 1fr;
+      }
+
+      .lead-modal h3 {
+        font-size: 22px;
+      }
     }
   </style>
 </head>
@@ -743,7 +901,7 @@
               <a class="pill btn-white" href="https://wa.me/5512981402217?text=Quero%20come%C3%A7ar%20a%20minha%20jornada"
                 target="_blank" rel="noopener">Quero iniciar minha jornada</a>
 
-              <!-- ✅ ALTERAÇÃO: abre modal com Google Form -->
+              <!-- ✅ Abre modal do formulário -->
               <a class="pill btn-secondary" href="javascript:void(0)" onclick="openLeadModal()">Quero entender se é para
                 mim</a>
             </div>
@@ -789,7 +947,7 @@
             <a class="pill btn-primary" href="https://wa.me/5512981402217?text=Quero%20come%C3%A7ar%20a%20minha%20jornada"
               target="_blank" rel="noopener">Quero iniciar minha jornada</a>
 
-            <!-- ✅ ALTERAÇÃO: abre modal com Google Form -->
+            <!-- ✅ Abre modal do formulário -->
             <a class="pill btn-secondary" href="javascript:void(0)" onclick="openLeadModal()">Quero entender se é para
               mim</a>
           </div>
@@ -979,20 +1137,82 @@
   </main>
 
   <!-- =========================================================
-       MODAL DO GOOGLE FORM (nova funcionalidade)
-       IMPORTANTE: para embed funcionar bem, troque publish-editor por embedded=true
+       MODAL DO FORM (com os entry.* do Google Forms)
        ========================================================= -->
-  <div class="modal-backdrop" id="leadModal" aria-hidden="true">
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="leadModalTitle">
-      <div class="modal-header">
-        <h3 class="modal-title" id="leadModalTitle">Quero entender se é para mim</h3>
-        <button class="modal-close" type="button" id="closeLeadModal" aria-label="Fechar">✕</button>
+  <div class="modal-overlay" id="leadModal" aria-hidden="true">
+    <div class="lead-modal" role="dialog" aria-modal="true" aria-labelledby="leadModalTitle">
+      <div class="top">
+        <div>
+          <h3 id="leadModalTitle">Quero entender se é para mim</h3>
+          <p>Preencha abaixo e em breve entraremos em contato.</p>
+        </div>
+        <button class="lead-close" type="button" id="closeLeadModal" aria-label="Fechar">✕</button>
       </div>
-      <div class="modal-body">
-        <iframe title="Formulário de contato"
-          src="https://docs.google.com/forms/d/e/1FAIpQLSc343T86qOwMwLlOx4PgyKtW4hqPOBp6NPW2Hz8oXrdYvGw7g/viewform?embedded=true"
-          loading="lazy"></iframe>
-      </div>
+
+      <form class="lead-form" id="leadForm">
+        <div class="lead-grid">
+          <div class="lead-field">
+            <label for="leadName">Nome completo</label>
+            <input id="leadName" name="entry.407392332" placeholder="Seu nome completo" autocomplete="name" required>
+          </div>
+
+          <div class="lead-field">
+            <label for="leadEmail">Email</label>
+            <input id="leadEmail" name="entry.526339929" type="email" placeholder="seuemail@exemplo.com"
+              autocomplete="email" required>
+          </div>
+        </div>
+
+        <div class="lead-grid">
+          <div class="lead-field">
+            <label for="leadWhatsapp">WhatsApp</label>
+            <input id="leadWhatsapp" name="entry.1559174376" placeholder="(DDD) + número" inputmode="tel"
+              autocomplete="tel" required>
+          </div>
+
+          <div class="lead-field">
+            <label>Método de contato</label>
+            <div class="segmented" role="radiogroup" aria-label="Método de contato">
+              <label>
+                <input type="radio" name="entry.268953612" value="Email" required>
+                <span>Email</span>
+              </label>
+              <label>
+                <input type="radio" name="entry.268953612" value="WhatsApp">
+                <span>WhatsApp</span>
+              </label>
+              <label>
+                <input type="radio" name="entry.268953612" value="Telefone">
+                <span>Telefone</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="lead-field">
+          <label for="leadStory">O que você tem passado que te fez buscar autoconhecimento?</label>
+          <textarea id="leadStory" name="entry.804946524"
+            placeholder="Conte um pouco (pode ser em poucas linhas)..." required></textarea>
+        </div>
+
+        <div class="lead-actions">
+          <button class="pill btn-primary" type="submit" id="submitLeadBtn">Enviar e receber contato</button>
+          <button class="pill btn-secondary" type="button" id="cancelLeadBtn">Cancelar</button>
+        </div>
+
+        <div class="lead-error" id="leadError">
+          ⚠️ Não foi possível enviar agora. Tente novamente em instantes.
+        </div>
+
+        <div class="lead-success" id="successMsg">
+          ✨ Obrigado! <br>
+          Em breve entraremos em contato com você.
+        </div>
+
+        <div class="lead-hint">
+          Ao enviar, seus dados serão registrados no seu Google Forms.
+        </div>
+      </form>
     </div>
   </div>
 
@@ -1028,15 +1248,29 @@
   </script>
 
   <script>
-    // Modal do Google Form (abre no clique do botão "Quero entender se é para mim")
+    // Modal + envio para Google Forms usando os "entry.*"
     (function () {
+      // ✅ seu Form ID (mesmo do embed)
+      const FORM_ID = "1FAIpQLSc343T86qOwMwLlOx4PgyKtW4hqPOBp6NPW2Hz8oXrdYvGw7g";
+      const FORM_ACTION = `https://docs.google.com/forms/d/e/${FORM_ID}/formResponse`;
+
       const modal = document.getElementById('leadModal');
       const closeBtn = document.getElementById('closeLeadModal');
+      const cancelBtn = document.getElementById('cancelLeadBtn');
+      const form = document.getElementById('leadForm');
+      const successMsg = document.getElementById('successMsg');
+      const errorMsg = document.getElementById('leadError');
+      const submitBtn = document.getElementById('submitLeadBtn');
 
       function openModal() {
         modal.classList.add('is-open');
         modal.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
+
+        // reset visual (pra toda abertura ficar "limpa")
+        successMsg.style.display = 'none';
+        errorMsg.style.display = 'none';
+        submitBtn.disabled = false;
       }
 
       function closeModal() {
@@ -1045,17 +1279,47 @@
         document.body.style.overflow = '';
       }
 
+      // fecha
       closeBtn.addEventListener('click', closeModal);
-
-      modal.addEventListener('click', (e) => {
-        if (e.target === modal) closeModal();
-      });
-
+      cancelBtn.addEventListener('click', closeModal);
+      modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && modal.classList.contains('is-open')) closeModal();
       });
 
+      // expõe pra usar nos botões
       window.openLeadModal = openModal;
+
+      // submit
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        errorMsg.style.display = 'none';
+        successMsg.style.display = 'none';
+
+        submitBtn.disabled = true;
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = "Enviando...";
+
+        try {
+          const fd = new FormData(form);
+
+          // Envio para Google Forms (no-cors, pois o Google bloqueia leitura de resposta)
+          await fetch(FORM_ACTION, {
+            method: "POST",
+            mode: "no-cors",
+            body: fd
+          });
+
+          // Se chegou aqui, consideramos sucesso (no-cors não dá pra ler status)
+          form.reset();
+          successMsg.style.display = 'block';
+        } catch (err) {
+          errorMsg.style.display = 'block';
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalText;
+        }
+      });
     })();
   </script>
 
