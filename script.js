@@ -1,205 +1,320 @@
-    // Highlight do menu conforme rolagem (IntersectionObserver)
-    (function () {
-      const links = Array.from(document.querySelectorAll('#navlinks a[data-target]'));
-      const sections = links
-        .map(a => document.getElementById(a.dataset.target))
-        .filter(Boolean);
+/* =========================
+   CONFIGURAÇÕES IMPORTANTES
+   ========================= */
 
-      if (!('IntersectionObserver' in window) || sections.length === 0) return;
+// 1) Checkout Hotmart (troque pela sua URL real)
+const HOTMART_CHECKOUT_URL = "https://pay.hotmart.com/SEU_CHECKOUT_AQUI";
 
-      const setActive = (id) => {
-        links.forEach(a => a.classList.toggle('active', a.dataset.target === id));
-      };
+// 2) Google Forms (Lead + Pré-checkout)
+// Troque pelos seus links reais de formResponse e os entry.ID reais.
+// Exemplo de endpoint: https://docs.google.com/forms/d/e/SEU_ID/formResponse
+const GOOGLE_FORMS = {
+  lead: {
+    endpoint: "", // <-- coloque aqui
+    // mapeamento (name do input -> entry.X)
+    map: {
+      "entry.NOME": "entry.407392332",
+      "entry.EMAIL": "entry.526339929",
+      "entry.WHATS": "entry.1559174376",
+      "entry.MOTIVO": "entry.804946524",
+      "entry.CONTATO": "entry.268953612"
+    }
+  },
+  checkout: {
+    endpoint: "", // <-- coloque aqui
+    map: {
+      "entry.NOME": "entry.407392332",
+      "entry.EMAIL": "entry.526339929",
+      "entry.CPF": "entry.000000000",      // opcional (troque)
+      "entry.WHATS": "entry.1559174376",
+      "entry.OBJETIVO": "entry.804946524", // troque se for outro
+      "entry.CONTATO": "entry.268953612"
+    }
+  }
+};
 
-      const obs = new IntersectionObserver((entries) => {
-        const visible = entries
-          .filter(e => e.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+// 3) “Abrir formulário quando termina o vídeo” apenas 1ª visita
+const FIRST_VISIT_KEY = "lp_first_visit_done";
+const VIDEO_MODAL_OPENED_KEY = "lp_video_modal_opened";
 
-        if (visible?.target?.id) setActive(visible.target.id);
-      }, {
-        root: null,
-        rootMargin: `-${Math.round(parseInt(getComputedStyle(document.documentElement).getPropertyValue('--headerH')) + 10)}px 0px -60% 0px`,
-        threshold: [0.15, 0.25, 0.4, 0.6, 0.8]
-      });
+/* =========================
+   HELPERS
+   ========================= */
 
-      sections.forEach(sec => obs.observe(sec));
-      setActive(sections[0].id);
-    })();
+function qs(sel) { return document.querySelector(sel); }
+function qsa(sel) { return Array.from(document.querySelectorAll(sel)); }
 
-    // Modal + envio para Google Forms usando os "entry.*"
-    (function () {
-      // ✅ seu Form ID (mesmo do embed)
-      const FORM_ID = "1FAIpQLSc343T86qOwMwLlOx4PgyKtW4hqPOBp6NPW2Hz8oXrdYvGw7g";
-      const FORM_ACTION = `https://docs.google.com/forms/d/e/${FORM_ID}/formResponse`;
+function lockScroll(lock) {
+  document.body.style.overflow = lock ? "hidden" : "";
+}
 
-      const modal = document.getElementById('leadModal');
-      const closeBtn = document.getElementById('closeLeadModal');
-      const cancelBtn = document.getElementById('cancelLeadBtn');
-      const form = document.getElementById('leadForm');
-      const successMsg = document.getElementById('successMsg');
-      const errorMsg = document.getElementById('leadError');
-      const submitBtn = document.getElementById('submitLeadBtn');
+function openOverlay(el) {
+  el.classList.add("is-open");
+  el.setAttribute("aria-hidden", "false");
+  lockScroll(true);
+}
 
-      function openModal() {
-        modal.classList.add('is-open');
-        modal.setAttribute('aria-hidden', 'false');
-        document.body.style.overflow = 'hidden';
+function closeOverlay(el) {
+  el.classList.remove("is-open");
+  el.setAttribute("aria-hidden", "true");
+  lockScroll(false);
+}
 
-        // reset visual (pra toda abertura ficar "limpa")
-        successMsg.style.display = 'none';
-        errorMsg.style.display = 'none';
-        submitBtn.disabled = false;
+function isFirstVisit() {
+  return !localStorage.getItem(FIRST_VISIT_KEY);
+}
+
+function markVisited() {
+  localStorage.setItem(FIRST_VISIT_KEY, "1");
+}
+
+/**
+ * Envia para Google Forms via POST no-cors
+ * (sem depender de backend)
+ */
+async function postToGoogleForms(formEl, cfg) {
+  if (!cfg?.endpoint) return { ok: false, skipped: true };
+
+  const fd = new FormData();
+  const raw = new FormData(formEl);
+
+  for (const [k, v] of raw.entries()) {
+    const entryKey = cfg.map[k];
+    if (!entryKey) continue;
+    fd.append(entryKey, v);
+  }
+
+  try {
+    await fetch(cfg.endpoint, {
+      method: "POST",
+      mode: "no-cors",
+      body: fd
+    });
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: e };
+  }
+}
+
+/* =========================
+   MENU HAMBURGER (drawer)
+   ========================= */
+
+(function initDrawer() {
+  const btn = qs("#hamburgerBtn");
+  const backdrop = qs("#drawerBackdrop");
+  const closeBtn = qs("#drawerClose");
+
+  if (!btn || !backdrop || !closeBtn) return;
+
+  function openDrawer() {
+    backdrop.classList.add("is-open");
+    backdrop.setAttribute("aria-hidden", "false");
+    btn.setAttribute("aria-expanded", "true");
+    lockScroll(true);
+  }
+
+  function closeDrawer() {
+    backdrop.classList.remove("is-open");
+    backdrop.setAttribute("aria-hidden", "true");
+    btn.setAttribute("aria-expanded", "false");
+    lockScroll(false);
+  }
+
+  btn.addEventListener("click", openDrawer);
+  closeBtn.addEventListener("click", closeDrawer);
+
+  backdrop.addEventListener("click", (e) => {
+    if (e.target === backdrop) closeDrawer();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && backdrop.classList.contains("is-open")) closeDrawer();
+  });
+
+  // Fechar ao clicar em links
+  qsa("#navlinks a").forEach(a => {
+    a.addEventListener("click", () => closeDrawer());
+  });
+
+  // Ações no drawer
+  const drawerLeadBtn = qs("#drawerLeadBtn");
+  const drawerCheckoutBtn = qs("#drawerCheckoutBtn");
+
+  drawerLeadBtn?.addEventListener("click", () => {
+    closeDrawer();
+    openLeadModal();
+  });
+
+  drawerCheckoutBtn?.addEventListener("click", () => {
+    closeDrawer();
+    openCheckoutModal();
+  });
+})();
+
+/* =========================
+   MODAIS
+   ========================= */
+
+const leadModal = qs("#leadModal");
+const checkoutModal = qs("#checkoutModal");
+
+function openLeadModal() {
+  if (!leadModal) return;
+  openOverlay(leadModal);
+}
+
+function closeLeadModal() {
+  if (!leadModal) return;
+  closeOverlay(leadModal);
+}
+
+function openCheckoutModal() {
+  if (!checkoutModal) return;
+  openOverlay(checkoutModal);
+}
+
+function closeCheckoutModal() {
+  if (!checkoutModal) return;
+  closeOverlay(checkoutModal);
+}
+
+(function initModals() {
+  // Botões de abrir
+  qs("#openLeadBtn")?.addEventListener("click", openLeadModal);
+  qs("#openLeadBtn2")?.addEventListener("click", openLeadModal);
+
+  qs("#openCheckoutBtn")?.addEventListener("click", openCheckoutModal);
+  qs("#openCheckoutBtn2")?.addEventListener("click", openCheckoutModal);
+  qs("#topCtaBtn")?.addEventListener("click", openCheckoutModal); // CTA do header abre prompt (não rola)
+
+  // Botões de fechar
+  qs("#closeLeadModal")?.addEventListener("click", closeLeadModal);
+  qs("#closeCheckoutModal")?.addEventListener("click", closeCheckoutModal);
+
+  // Fechar clicando fora
+  leadModal?.addEventListener("click", (e) => { if (e.target === leadModal) closeLeadModal(); });
+  checkoutModal?.addEventListener("click", (e) => { if (e.target === checkoutModal) closeCheckoutModal(); });
+
+  // Esc fecha
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    if (leadModal?.classList.contains("is-open")) closeLeadModal();
+    if (checkoutModal?.classList.contains("is-open")) closeCheckoutModal();
+  });
+})();
+
+/* =========================
+   FORM: LEAD
+   ========================= */
+
+(function initLeadForm() {
+  const form = qs("#leadForm");
+  const success = qs("#leadSuccess");
+  if (!form) return;
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const btn = form.querySelector("button[type='submit']");
+    const old = btn?.textContent;
+    if (btn) { btn.disabled = true; btn.textContent = "Enviando..."; }
+
+    await postToGoogleForms(form, GOOGLE_FORMS.lead);
+
+    // UI success
+    if (success) success.style.display = "block";
+    form.querySelectorAll("input,textarea,button").forEach(el => el.disabled = true);
+
+    setTimeout(() => {
+      closeLeadModal();
+      // reset visual (se quiser, comente)
+      // location.reload();
+    }, 1200);
+
+    if (btn) { btn.disabled = true; btn.textContent = old || "Enviado"; }
+  });
+})();
+
+/* =========================
+   FORM: PRÉ-CHECKOUT
+   - Envia dados para Google Forms (se configurado)
+   - Abre checkout Hotmart
+   ========================= */
+
+(function initCheckoutForm() {
+  const form = qs("#checkoutForm");
+  const success = qs("#checkoutSuccess");
+  if (!form) return;
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const btn = form.querySelector("button[type='submit']");
+    const old = btn?.textContent;
+    if (btn) { btn.disabled = true; btn.textContent = "Enviando..."; }
+
+    await postToGoogleForms(form, GOOGLE_FORMS.checkout);
+
+    if (success) success.style.display = "block";
+
+    // Fecha modal e abre checkout
+    setTimeout(() => {
+      closeCheckoutModal();
+
+      if (HOTMART_CHECKOUT_URL && HOTMART_CHECKOUT_URL.includes("http")) {
+        window.open(HOTMART_CHECKOUT_URL, "_blank", "noopener");
+      } else {
+        alert("⚠️ Configure a URL do checkout Hotmart no script.js");
       }
+    }, 700);
 
-      function closeModal() {
-        modal.classList.remove('is-open');
-        modal.setAttribute('aria-hidden', 'true');
-        document.body.style.overflow = '';
-      }
+    if (btn) { btn.disabled = false; btn.textContent = old || "Continuar para pagamento"; }
+  });
+})();
 
-      // fecha
-      closeBtn.addEventListener('click', closeModal);
-      cancelBtn.addEventListener('click', closeModal);
-      modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.classList.contains('is-open')) closeModal();
-      });
+/* =========================
+   ABRIR FORM AO FINAL DO VÍDEO (1ª visita)
+   - usa YouTube IFrame API
+   ========================= */
 
-      // expõe pra usar nos botões
-      window.openLeadModal = openModal;
+let ytPlayer = null;
 
-      // submit
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        errorMsg.style.display = 'none';
-        successMsg.style.display = 'none';
+window.onYouTubeIframeAPIReady = function () {
+  const iframeEl = document.getElementById("ytPlayer");
+  if (!iframeEl) return;
 
-        submitBtn.disabled = true;
-        const originalText = submitBtn.textContent;
-        submitBtn.textContent = "Enviando...";
+  ytPlayer = new YT.Player("ytPlayer", {
+    events: {
+      onStateChange: onPlayerStateChange
+    }
+  });
+};
 
-        try {
-          const fd = new FormData(form);
+function onPlayerStateChange(event) {
+  // 0 = ended
+  if (event.data !== YT.PlayerState.ENDED) return;
 
-          // Envio para Google Forms (no-cors, pois o Google bloqueia leitura de resposta)
-          await fetch(FORM_ACTION, {
-            method: "POST",
-            mode: "no-cors",
-            body: fd
-          });
+  // só na primeira visita + só 1 vez
+  if (!isFirstVisit()) return;
+  if (localStorage.getItem(VIDEO_MODAL_OPENED_KEY)) return;
 
-          // Se chegou aqui, consideramos sucesso (no-cors não dá pra ler status)
-          form.reset();
-          successMsg.style.display = 'block';
-        } catch (err) {
-          errorMsg.style.display = 'block';
-        } finally {
-          submitBtn.disabled = false;
-          submitBtn.textContent = originalText;
-        }
-      });
-    })();
+  localStorage.setItem(VIDEO_MODAL_OPENED_KEY, "1");
+  markVisited();
 
-    // Propaga UTMs/params da URL para links do Hotmart (pay.hotmart.com) automaticamente
-    (function () {
-      const params = new URLSearchParams(window.location.search);
-      if ([...params.keys()].length === 0) return;
+  // abre o modal lead ao terminar
+  openLeadModal();
+}
 
-      function isHotmart(url) {
-        try { return new URL(url, window.location.href).hostname.includes('hotmart'); }
-        catch { return false; }
-      }
-
-      document.querySelectorAll('a[href]').forEach(a => {
-        const href = a.getAttribute('href');
-        if (!href) return;
-        if (!href.includes('hotmart') && !href.includes('pay.hotmart.com')) return;
-        if (!isHotmart(href)) return;
-
-        const u = new URL(href, window.location.href);
-        params.forEach((v, k) => {
-          if (!u.searchParams.has(k)) u.searchParams.set(k, v);
-        });
-        a.setAttribute('href', u.toString());
-      });
-    })();
-
-    /**
-     * HOTMART CHECKOUT
-     * 1) Troque HOTMART_CHECKOUT_BASE pela URL do seu checkout Hotmart (ex.: https://pay.hotmart.com/XXXXX)
-     * 2) Opcional: se você usa parâmetros específicos, adicione aqui.
-     *
-     * Este script preserva UTMs da URL (utm_source, utm_medium, utm_campaign, utm_content, utm_term)
-     * e repassa para o checkout via querystring.
-     */
-    (function () {
-      const HOTMART_CHECKOUT_BASE = "https://pay.hotmart.com/SEU_CHECKOUT_AQUI";
-
-      const UTM_KEYS = ["utm_source","utm_medium","utm_campaign","utm_content","utm_term"];
-      const qs = new URLSearchParams(window.location.search);
-
-      function withUTM(url) {
-        try {
-          const u = new URL(url);
-          UTM_KEYS.forEach(k => {
-            const v = qs.get(k);
-            if (v && !u.searchParams.get(k)) u.searchParams.set(k, v);
-          });
-          return u.toString();
-        } catch (e) {
-          // Se não for URL absoluta, retorna como veio
-          return url;
-        }
-      }
-
-      function goCheckout(customUrl) {
-        const target = customUrl || HOTMART_CHECKOUT_BASE;
-        window.location.href = withUTM(target);
-      }
-
-      // Bind automático: qualquer elemento com data-hotmart-checkout abre o checkout
-      document.addEventListener("click", (e) => {
-        const el = e.target.closest("[data-hotmart-checkout]");
-        if (!el) return;
-        e.preventDefault();
-        const customUrl = el.getAttribute("data-hotmart-checkout-url") || null;
-        goCheckout(customUrl);
-      });
-
-      // Exponha para uso opcional em onclick=""
-      window.goHotmartCheckout = goCheckout;
-    })();
-
-    // YouTube API: abre o formulário ao finalizar o vídeo (somente na 1ª visita)
-    (function () {
-      const STORAGE_KEY = 'lp_jornada_form_after_video_shown_v1';
-
-      function alreadyShown() {
-        try { return localStorage.getItem(STORAGE_KEY) === '1'; } catch (e) { return false; }
-      }
-      function markShown() {
-        try { localStorage.setItem(STORAGE_KEY, '1'); } catch (e) {}
-      }
-
-      let player;
-
-      // Callback global exigido pela API do YouTube
-      window.onYouTubeIframeAPIReady = function () {
-        // Se já mostramos o modal nesta 1ª visita (ou visitas anteriores), não inicializa nada
-        // (evita abrir de novo ao final do vídeo)
-        player = new YT.Player('ytplayer', {
-          events: { 'onStateChange': onPlayerStateChange }
-        });
-      };
-
-      function onPlayerStateChange(event) {
-        // 0 = vídeo terminou
-        if (event.data === YT.PlayerState.ENDED) {
-          if (!alreadyShown() && typeof window.openLeadModal === 'function') {
-            window.openLeadModal();
-            markShown();
-          }
-        }
-      }
-    })();
+/* =========================
+   (IMPORTANTE) E-MAIL PÓS PAGAMENTO
+   =========================
+   Front-end NÃO consegue saber se a pessoa pagou na Hotmart.
+   O correto é:
+   - configurar Webhook da Hotmart (evento: purchase approved)
+   - no webhook: enviar email para o cliente + notificar o Glauber
+   Isso exige:
+   - backend (Node/Express) OU
+   - automação (Make/Zapier) OU
+   - Google Apps Script (com endpoint)
+*/
