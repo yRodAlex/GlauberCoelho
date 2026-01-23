@@ -20,37 +20,28 @@
 </head>
 
 <body>
-  <!-- HEADER FIXO -->
+  <!-- HEADER SIMPLES -->
   <header class="site-header" id="siteHeader">
     <div class="container header-inner">
-      <!-- Hamburger (somente mobile) -->
+      <!-- Hamburger -->
       <button class="hamburger" id="hamburgerBtn" type="button" aria-label="Abrir menu" aria-controls="mobileMenu"
         aria-expanded="false">
-        <span class="hamburger-lines" aria-hidden="true"></span>
+        <span class="hamburger-icon" aria-hidden="true"></span>
       </button>
 
-      <!-- Brand -->
+      <!-- Título -->
       <a class="brand" href="#top" aria-label="Ir para o topo">Jornada Terapêutica</a>
 
-      <!-- Links (desktop) -->
-      <nav class="navlinks" id="desktopNav" aria-label="Navegação principal">
-        <a href="#para-quem" data-target="para-quem">Para Quem</a>
-        <a href="#como-funciona" data-target="como-funciona">Como Funciona</a>
-        <a href="#facilitador" data-target="facilitador">Facilitador</a>
-      </nav>
-
-      <!-- CTA Top (sempre canto direito) -->
-      <a class="pill btn-primary header-cta" href="javascript:void(0)" id="openPrecheckoutTop">
-        Garantir minha vaga
-      </a>
+      <!-- Espaçador p/ centralizar o título -->
+      <div class="header-spacer" aria-hidden="true"></div>
     </div>
 
     <!-- MENU MOBILE (dropdown) -->
     <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
       <div class="mobile-menu-inner">
-        <a href="#para-quem" data-target="para-quem" class="mobile-link">Para Quem</a>
-        <a href="#como-funciona" data-target="como-funciona" class="mobile-link">Como Funciona</a>
-        <a href="#facilitador" data-target="facilitador" class="mobile-link">Facilitador</a>
+        <a href="#para-quem" class="mobile-link">Para Quem</a>
+        <a href="#como-funciona" class="mobile-link">Como Funciona</a>
+        <a href="#facilitador" class="mobile-link">Facilitador</a>
       </div>
     </div>
   </header>
@@ -66,8 +57,9 @@
             <p>Um caminho estruturado para compreender, ressignificar e reorganizar sua forma de se relacionar.</p>
 
             <div class="hero-cta">
-              <a class="pill btn-white" href="https://wa.me/5512981402217?text=Quero%20come%C3%A7ar%20a%20minha%20jornada"
-                target="_blank" rel="noopener">Quero iniciar minha jornada</a>
+              <a class="pill btn-white"
+                href="https://wa.me/5512981402217?text=Quero%20come%C3%A7ar%20a%20minha%20jornada" target="_blank"
+                rel="noopener">Quero iniciar minha jornada</a>
 
               <a class="pill btn-secondary" href="javascript:void(0)" id="openLeadModalHero">Quero entender se é para
                 mim</a>
@@ -112,8 +104,6 @@
           </div>
 
           <div class="cta-pair">
-            <a class="pill btn-primary" href="javascript:void(0)" id="openPrecheckoutVideo">Garantir minha vaga</a>
-
             <a class="pill btn-secondary" href="javascript:void(0)" id="openLeadModalVideo">Quero entender se é para
               mim</a>
           </div>
@@ -211,28 +201,21 @@
       </div>
     </section>
 
-    <!-- CTA FINAL -->
-    <section id="cta-final" class="section final">
-      <div class="container">
-        <div class="cta-card">
-          <h3>Você merece viver um relacionamento saudável e excepcional.</h3>
-          <p>Autoconhecimento não é sobre saber mais. É sobre se relacionar melhor consigo e com o outro.</p>
-
-          <a class="pill btn-primary" href="javascript:void(0)" id="openPrecheckoutFinal">
-            QUERO GARANTIR MINHA VAGA
-          </a>
-        </div>
-      </div>
-    </section>
-
     <footer>
       © 2026 Jornada Terapêutica. Todos os direitos reservados.
     </footer>
   </main>
 
-  <!-- =========================================================
-       MODAL: "Quero entender se é para mim" (Lead)
-       ========================================================= -->
+  <!-- BOTÃO FLUTUANTE (CARRINHO) -->
+  <button class="fab-cart" id="fabCart" type="button" aria-label="Abrir checkout">
+    <span class="fab-glow" aria-hidden="true"></span>
+    <svg class="fab-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        d="M6.2 6.6h14l-1.7 8.4a2 2 0 0 1-2 1.6H8.1a2 2 0 0 1-2-1.6L4.6 3.8H2.5a.9.9 0 1 1 0-1.8h2.8c.4 0 .8.3.9.7L6.2 6.6Zm2.2 17a1.4 1.4 0 1 1 0-2.8 1.4 1.4 0 0 1 0 2.8Zm9.2 0a1.4 1.4 0 1 1 0-2.8 1.4 1.4 0 0 1 0 2.8Z" />
+    </svg>
+  </button>
+
+  <!-- MODAL: "Quero entender se é para mim" -->
   <div class="modal-overlay" id="leadModal" aria-hidden="true">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="leadTitle">
       <div class="modal-head">
@@ -289,9 +272,7 @@
     </div>
   </div>
 
-  <!-- =========================================================
-       MODAL: "Garantir minha vaga" (Pré-checkout)
-       ========================================================= -->
+  <!-- MODAL: "Garantir minha vaga" -->
   <div class="modal-overlay" id="precheckoutModal" aria-hidden="true">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="preTitle">
       <div class="modal-head">
@@ -358,8 +339,6 @@
   </div>
 
   <script src="./script.js"></script>
-
-  <!-- YouTube API (para detectar fim do vídeo) -->
   <script src="https://www.youtube.com/iframe_api"></script>
 </body>
 
