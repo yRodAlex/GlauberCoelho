@@ -20,41 +20,44 @@
 
 <body>
   <header>
-    <div class="container nav">
-      <div class="nav-left">
-        <button class="hamburger" id="hamburgerBtn" aria-label="Abrir menu" aria-expanded="false"
-          aria-controls="mobileMenu">☰</button>
-
-        <a class="brand" href="#top">Jornada Terapêutica</a>
-      </div>
-
-      <div class="nav-center">
-        <a class="brand-mobile" href="#top">Jornada Terapêutica</a>
-
-        <div class="navlinks" id="navlinks">
-          <a href="#para-quem" data-target="para-quem">Para Quem</a>
-          <a href="#como-funciona" data-target="como-funciona">Como Funciona</a>
-          <a href="#facilitador" data-target="facilitador">Facilitador</a>
-        </div>
-      </div>
-
-      <div class="nav-right">
-        <a class="pill btn-primary header-cta" href="javascript:void(0)" onclick="openCheckoutModal()">
-          Garantir minha vaga
-        </a>
-      </div>
+  <div class="container nav">
+    <!-- ESQUERDA (hamburger - só mobile) -->
+    <div class="nav-left">
+      <button class="hamburger" id="hamburgerBtn" type="button" aria-label="Abrir menu">☰</button>
     </div>
 
-    <!-- Mobile drawer -->
-    <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
-      <div class="mobile-menu-panel" role="dialog" aria-modal="true" aria-label="Menu">
-        <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Fechar menu">✕</button>
-        <a href="#para-quem" class="mobile-link">Para Quem</a>
-        <a href="#como-funciona" class="mobile-link">Como Funciona</a>
-        <a href="#facilitador" class="mobile-link">Facilitador</a>
-      </div>
+    <!-- CENTRO (título central no mobile + menu normal no desktop) -->
+    <div class="nav-center">
+      <a class="brand-mobile" href="#top">Jornada Terapêutica</a>
+
+      <a class="brand" href="#top">Jornada Terapêutica</a>
+
+      <nav class="navlinks" id="navlinks">
+        <a href="#para-quem" data-target="para-quem">Para Quem</a>
+        <a href="#como-funciona" data-target="como-funciona">Como Funciona</a>
+        <a href="#facilitador" data-target="facilitador">Facilitador</a>
+      </nav>
     </div>
-  </header>
+
+    <!-- DIREITA (CTA fixo no canto direito) -->
+    <div class="nav-right">
+      <a class="pill btn-primary header-cta" href="javascript:void(0)" onclick="openCheckoutModal()">
+        Garantir minha vaga
+      </a>
+    </div>
+  </div>
+</header>
+
+<!-- MENU MOBILE (overlay) -->
+<div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+  <div class="mobile-menu-panel">
+    <button class="mobile-menu-close" id="mobileMenuClose" type="button" aria-label="Fechar">✕</button>
+    <a class="mobile-link" href="#para-quem" data-close-menu>Para Quem</a>
+    <a class="mobile-link" href="#como-funciona" data-close-menu>Como Funciona</a>
+    <a class="mobile-link" href="#facilitador" data-close-menu>Facilitador</a>
+  </div>
+</div>
+
 
   <main id="top">
     <!-- HERO -->
@@ -400,3 +403,4 @@
 </body>
 
 </html>
+

@@ -245,3 +245,38 @@
     });
   }
 })();
+
+(function () {
+  const menu = document.getElementById('mobileMenu');
+  const openBtn = document.getElementById('hamburgerBtn');
+  const closeBtn = document.getElementById('mobileMenuClose');
+
+  if (!menu || !openBtn || !closeBtn) return;
+
+  function openMenu() {
+    menu.classList.add('is-open');
+    menu.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeMenu() {
+    menu.classList.remove('is-open');
+    menu.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  openBtn.addEventListener('click', openMenu);
+  closeBtn.addEventListener('click', closeMenu);
+
+  menu.addEventListener('click', (e) => {
+    if (e.target === menu) closeMenu();
+  });
+
+  menu.querySelectorAll('[data-close-menu]').forEach(a => {
+    a.addEventListener('click', closeMenu);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && menu.classList.contains('is-open')) closeMenu();
+  });
+})();
