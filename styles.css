@@ -549,17 +549,61 @@ textarea { resize: vertical; min-height: 110px; }
 .success-title { font-weight: 900; font-size: 18px; color: var(--deep); margin-bottom: 6px; }
 .success-text { color: rgba(36,26,56,.72); font-weight: 700; margin-bottom: 14px; }
 
-/* RESPONSIVE */
+/* =========================================================
+   RESPONSIVE (AQUI ESTÁ A CORREÇÃO DO HEADER NO MOBILE)
+   ========================================================= */
 @media (max-width: 900px) {
   .hero .wrap { grid-template-columns: 1fr; }
   .hero-media { justify-self: center; max-width: 520px; }
   .grid-2 { grid-template-columns: 1fr; }
   .bio { grid-template-columns: 1fr; }
 
+  /* Header mobile: left = hamburger, center = título, right = CTA */
+  .nav {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    min-height: var(--headerH);
+  }
+
+  .nav-left {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    gap: 0;
+  }
+
+  .nav-right {
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
   .hamburger { display: inline-flex; }
+
   .navlinks { display: none; }
   .brand { display: none; }
-  .brand-mobile { display: inline-block; }
+
+  .brand-mobile {
+    display: inline-block;
+    max-width: calc(100vw - 18px - 18px - 44px - 12px - 52vw);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: center;
+    font-size: 16px;
+  }
+
+  .header-cta {
+    min-width: 0;
+    max-width: 52vw;
+    padding: 12px 14px;
+    font-size: 13px;
+  }
 
   .checkout-grid { grid-template-columns: 1fr; }
   .pref-grid { grid-template-columns: 1fr; }
@@ -572,13 +616,7 @@ textarea { resize: vertical; min-height: 110px; }
   .navlinks { display: flex !important; }
 }
 
-/* CTA não sai da tela no mobile */
+/* CTA não sai da tela no mobile muito pequeno */
 @media (max-width: 520px) {
-  .header-cta {
-    max-width: 60vw;
-    min-width: 0;
-    padding: 12px 14px;
-    font-size: 13px;
-  }
-  .nav { gap: 10px; }
+  .header-cta { max-width: 56vw; }
 }
