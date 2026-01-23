@@ -154,7 +154,6 @@
       closeModal('leadModal');
       form.reset();
     } catch {
-      // fallback
       form.action = LEAD_FORM_ACTION;
       form.method = 'POST';
       form.target = '_self';
@@ -182,7 +181,7 @@
       return;
     }
 
-    // direto pro checkout (sem telinha confusa)
+    // direto pro checkout
     closeModal('precheckoutModal');
     form.reset();
     window.location.href = HOTMART_CHECKOUT_URL;

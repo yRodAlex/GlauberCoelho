@@ -329,15 +329,21 @@ footer {
   padding: 18px;
 }
 .modal-overlay.is-open { display: flex; }
+
+/* ✅ CORREÇÃO: modal agora redimensiona e não estoura no mobile */
 .modal {
   background: #fff;
   border-radius: 22px;
   width: min(860px, 96%);
+  max-height: 86vh;               /* <-- limite para caber no celular */
+  display: flex;                   /* <-- permite header + corpo rolável */
+  flex-direction: column;
   padding: 0;
   box-shadow: 0 30px 80px rgba(0,0,0,.35);
   border: 1px solid rgba(58,39,95,.12);
-  overflow: hidden;
+  overflow: hidden;                /* <-- mantém borda perfeita */
 }
+
 .modal-head {
   display: flex;
   align-items: flex-start;
@@ -346,7 +352,9 @@ footer {
   padding: 16px 18px;
   background: linear-gradient(135deg, rgba(58, 39, 95, .08), rgba(114, 136, 169, .08));
   border-bottom: 1px solid rgba(58, 39, 95, .10);
+  flex: 0 0 auto;
 }
+
 .modal h3 {
   margin: 0 0 4px;
   font-family: "Playfair Display", serif;
@@ -354,6 +362,7 @@ footer {
   font-size: 22px;
 }
 .modal p { margin: 0; color: rgba(36,26,56,.72); font-weight: 600; }
+
 .modal-close {
   border: 0;
   background: rgba(58, 39, 95, .10);
@@ -368,8 +377,18 @@ footer {
 }
 .modal-close:hover { background: rgba(58, 39, 95, .16); }
 
-.form-grid { padding: 16px 18px 18px; display: grid; gap: 14px; }
+/* ✅ CORREÇÃO: conteúdo do form rola dentro do modal */
+.form-grid {
+  padding: 16px 18px 18px;
+  display: grid;
+  gap: 14px;
+  overflow: auto;                 /* <-- rolagem interna */
+  -webkit-overflow-scrolling: touch;
+  flex: 1 1 auto;
+}
+
 .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
 .field label {
   display: inline-flex;
   gap: 6px;
@@ -378,8 +397,10 @@ footer {
   color: rgba(36,26,56,.86);
   margin-bottom: 8px;
 }
+
 .req { color: rgba(58,39,95,.95); font-weight: 900; }
 .ok { font-weight: 900; }
+
 .field input,
 .field textarea {
   width: 100%;
@@ -391,14 +412,22 @@ footer {
   background: rgba(249,249,251,.75);
   outline: none;
 }
+
 .field input:focus,
 .field textarea:focus {
   border-color: rgba(58,39,95,.35);
   box-shadow: 0 0 0 4px rgba(58,39,95,.08);
 }
-.field textarea { resize: vertical; min-height: 110px; }
+
+/* ✅ CORREÇÃO: textarea não estoura no mobile */
+.field textarea {
+  resize: vertical;
+  min-height: 110px;
+  max-height: 28vh;
+}
 
 .segmented { display: flex; gap: 10px; flex-wrap: wrap; }
+
 .seg {
   display: inline-flex;
   align-items: center;
@@ -414,6 +443,7 @@ footer {
 .seg span { font-weight: 800; color: rgba(36,26,56,.85); }
 
 .modal-submit { width: 100%; justify-content: center; margin-top: 4px; padding: 16px 18px; }
+
 .fineprint {
   text-align: center;
   color: rgba(36,26,56,.62);
@@ -469,6 +499,17 @@ footer {
   .bio { grid-template-columns: 1fr; }
   .two-col { grid-template-columns: 1fr; }
 }
+
+@media (max-width: 520px) {
+  /* ✅ só para o modal caber perfeito (sem mudar estética) */
+  .modal-overlay { padding: 14px; }
+  .modal { width: min(520px, 92%); border-radius: 18px; max-height: 88vh; }
+  .modal-head { padding: 14px 14px; }
+  .form-grid { padding: 14px 14px 14px; }
+  .segmented { gap: 8px; }
+  .seg { width: 100%; justify-content: space-between; }
+}
+
 @media (max-width: 420px) {
   .container { padding: 0 14px; }
   .fab-cart { right: 14px; bottom: 14px; width: 56px; height: 56px; border-radius: 18px; }
