@@ -15,45 +15,45 @@
     href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap"
     rel="stylesheet">
 
-  <link rel="stylesheet" href="./style.css" />
+  <link rel="stylesheet" href="./styles.css" />
 </head>
 
 <body>
-  <header class="header">
+  <header>
     <div class="container nav">
-      <!-- Mobile: hamburger fixo à esquerda -->
-      <button class="hamburger" id="hamburgerBtn" type="button" aria-label="Abrir menu" aria-controls="mobileMenu"
-        aria-expanded="false">
-        ☰
-      </button>
+      <div class="nav-left">
+        <button class="hamburger" id="hamburgerBtn" aria-label="Abrir menu" aria-expanded="false"
+          aria-controls="mobileMenu">☰</button>
 
-      <a class="brand" href="#top">Jornada Terapêutica</a>
+        <a class="brand" href="#top">Jornada Terapêutica</a>
+      </div>
 
-      <!-- Desktop links -->
-      <nav class="navlinks" id="navlinks" aria-label="Navegação principal">
-        <a href="#jornada" data-target="jornada">A Jornada</a>
-        <a href="#para-quem" data-target="para-quem">Para Quem</a>
-        <a href="#como-funciona" data-target="como-funciona">Como Funciona</a>
-        <a href="#facilitador" data-target="facilitador">Facilitador</a>
-      </nav>
+      <div class="nav-center">
+        <a class="brand-mobile" href="#top">Jornada Terapêutica</a>
 
-      <!-- CTA fixo no canto superior direito -->
-      <a class="pill btn-primary top-cta" href="javascript:void(0)" onclick="openPreCheckoutModal()">
-        Garantir minha vaga
-      </a>
+        <div class="navlinks" id="navlinks">
+          <a href="#para-quem" data-target="para-quem">Para Quem</a>
+          <a href="#como-funciona" data-target="como-funciona">Como Funciona</a>
+          <a href="#facilitador" data-target="facilitador">Facilitador</a>
+        </div>
+      </div>
+
+      <div class="nav-right">
+        <a class="pill btn-primary header-cta" href="javascript:void(0)" onclick="openCheckoutModal()">
+          Garantir minha vaga
+        </a>
+      </div>
     </div>
 
-    <!-- Mobile menu -->
-    <div class="mobile-menu-backdrop" id="mobileMenuBackdrop" aria-hidden="true"></div>
-    <nav class="mobile-menu" id="mobileMenu" aria-label="Menu mobile" aria-hidden="true">
-      <div class="mobile-menu-head">
-        <strong>Menu</strong>
-        <button class="mobile-close" id="mobileCloseBtn" type="button" aria-label="Fechar menu">✕</button>
+    <!-- Mobile drawer -->
+    <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+      <div class="mobile-menu-panel" role="dialog" aria-modal="true" aria-label="Menu">
+        <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Fechar menu">✕</button>
+        <a href="#para-quem" class="mobile-link">Para Quem</a>
+        <a href="#como-funciona" class="mobile-link">Como Funciona</a>
+        <a href="#facilitador" class="mobile-link">Facilitador</a>
       </div>
-      <a href="#para-quem" data-mobile-link>Para Quem</a>
-      <a href="#como-funciona" data-mobile-link>Como Funciona</a>
-      <a href="#facilitador" data-mobile-link>Facilitador</a>
-    </nav>
+    </div>
   </header>
 
   <main id="top">
@@ -66,16 +66,13 @@
             <h1>🌿 Jornada Terapêutica de Autoconhecimento e Vínculos</h1>
             <p>Um caminho estruturado para compreender, ressignificar e reorganizar sua forma de se relacionar.</p>
 
-            <!-- CTAs -->
             <div class="hero-cta">
-              <a class="pill btn-white" href="https://wa.me/5512981402217?text=Quero%20come%C3%A7ar%20a%20minha%20jornada"
-                target="_blank" rel="noopener">
-                Quero iniciar minha jornada
-              </a>
+              <a class="pill btn-white"
+                href="https://wa.me/5512981402217?text=Quero%20come%C3%A7ar%20a%20minha%20jornada" target="_blank"
+                rel="noopener">Quero iniciar minha jornada</a>
 
-              <a class="pill btn-secondary" href="javascript:void(0)" onclick="openLeadModal()">
-                Quero entender se é para mim
-              </a>
+              <a class="pill btn-secondary" href="javascript:void(0)" onclick="openLeadModal()">Quero entender se é para
+                mim</a>
             </div>
           </div>
 
@@ -110,21 +107,19 @@
 
         <div class="video-grid">
           <div class="video" aria-label="Vídeo de apresentação">
-            <!-- Troque pelo seu vídeo real -->
-            <iframe id="heroVideo" src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+            <iframe id="ytPlayer" src="https://www.youtube.com/embed/dQw4w9WgXcQ?enablejsapi=1"
               title="Vídeo de apresentação" loading="lazy"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowfullscreen></iframe>
           </div>
 
           <div class="cta-pair">
-            <a class="pill btn-primary" href="javascript:void(0)" onclick="openPreCheckoutModal()">
-              Garantir minha vaga
-            </a>
+            <a class="pill btn-primary"
+              href="https://wa.me/5512981402217?text=Quero%20come%C3%A7ar%20a%20minha%20jornada" target="_blank"
+              rel="noopener">Quero iniciar minha jornada</a>
 
-            <a class="pill btn-secondary" href="javascript:void(0)" onclick="openLeadModal()">
-              Quero entender se é para mim
-            </a>
+            <a class="pill btn-secondary" href="javascript:void(0)" onclick="openLeadModal()">Quero entender se é para
+              mim</a>
           </div>
         </div>
       </div>
@@ -151,50 +146,6 @@
           <div class="tile"><strong>Profundidade, não só insight</strong>
             <p>Querem autoconhecimento com profundidade, não apenas insight.</p>
           </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- PASSO A PASSO -->
-    <section class="section" style="background: linear-gradient(180deg, rgba(219,211,198,.18), var(--ice));">
-      <div class="container center">
-        <h2>A Jornada Terapêutica — Passo a Passo</h2>
-        <p class="sub">Um caminho estruturado para reconhecer, compreender e reorganizar o seu modo de se vincular.</p>
-
-        <div class="steps">
-          <div class="step">
-            <img alt="Identificação de padrões emocionais" src="https://placehold.co/900x500?text=Passo+1"
-              loading="lazy">
-            <h3>1) Identificação de padrões emocionais</h3>
-            <p>Você começa reconhecendo comportamentos, reações e repetições que surgem nos seus vínculos — especialmente
-              sob estresse emocional.</p>
-          </div>
-
-          <div class="step">
-            <img alt="Compreensão dos primeiros vínculos" src="https://placehold.co/900x500?text=Passo+2" loading="lazy">
-            <h3>2) Compreensão dos primeiros vínculos</h3>
-            <p>Exploramos como experiências iniciais de cuidado, ausência, previsibilidade ou instabilidade influenciaram
-              sua forma de amar, pedir, se proteger ou se afastar.</p>
-          </div>
-
-          <div class="step">
-            <img alt="Identificação do tipo de apego" src="https://placehold.co/900x500?text=Passo+3" loading="lazy">
-            <h3>3) Identificação do tipo de apego</h3>
-            <p>Com base na sua história e nos vínculos atuais, identificamos o padrão predominante de apego (ansioso,
-              evitativo, desorganizado ou seguro em construção).</p>
-          </div>
-
-          <div class="step">
-            <img alt="Ressignificação e reorganização emocional" src="https://placehold.co/900x500?text=Passo+4"
-              loading="lazy">
-            <h3>4) Ressignificação e reorganização emocional</h3>
-            <p>Trabalhamos ressignificações personalizadas, utilizando técnicas terapêuticas adequadas à sua demanda
-              específica — não existe fórmula única.</p>
-          </div>
-        </div>
-
-        <div class="highlight">
-          O objetivo não é eliminar emoções, mas mudar a forma como você se relaciona com elas.
         </div>
       </div>
     </section>
@@ -232,41 +183,6 @@
       </div>
     </section>
 
-    <!-- O QUE ESPERAR -->
-    <section class="section" style="background: linear-gradient(180deg, var(--ice), rgba(219,211,198,.20));">
-      <div class="container center">
-        <h2>O que esperar dessa jornada</h2>
-        <p class="sub">Sem ícones e sem imagens: como um caminho de construção interna.</p>
-
-        <div class="timeline" role="list">
-          <div class="t-item" role="listitem">
-            <strong>Mais consciência emocional no dia a dia</strong>
-            <div class="muted">Perceber antes de reagir e entender o que se passa dentro de você.</div>
-          </div>
-          <div class="t-item" role="listitem">
-            <strong>Redução de reações automáticas nos relacionamentos</strong>
-            <div class="muted">Menos impulso, mais presença e escolhas mais claras.</div>
-          </div>
-          <div class="t-item" role="listitem">
-            <strong>Construção de mais segurança interna</strong>
-            <div class="muted">Apoio em si mesmo(a), sem depender do externo para se regular.</div>
-          </div>
-          <div class="t-item" role="listitem">
-            <strong>Aprender a se posicionar sem se abandonar</strong>
-            <div class="muted">Limites e presença com responsabilidade emocional.</div>
-          </div>
-          <div class="t-item" role="listitem">
-            <strong>Vínculos com menos medo e mais presença</strong>
-            <div class="muted">Relações mais conscientes e estáveis.</div>
-          </div>
-
-          <div class="t-quote">
-            Não é um caminho rápido. É um caminho consistente.
-          </div>
-        </div>
-      </div>
-    </section>
-
     <!-- FACILITADOR -->
     <section id="facilitador" class="section">
       <div class="container center">
@@ -281,19 +197,20 @@
             <h3 style="margin:0 0 10px; color: var(--deep); font-size: 20px;">Conheça o Glauber</h3>
             <p class="muted" style="margin:0;">
               Minha abordagem une fundamentos da psicologia, teoria do apego e práticas de consciência emocional, sempre
-              com acolhimento, ética e profundidade. <br><br>
+              com acolhimento, ética e profundidade.
+              <br><br>
               Acredito que repetir padrões não é falta de força, mas resultado de histórias que ainda pedem compreensão e
-              reorganização. <br><br>
+              reorganização.
+              <br><br>
               Minha missão é conduzir pessoas que se sentem presas em ciclos afetivos para um lugar de mais segurança
-              interna, clareza e presença — começando por si. <br><br>
+              interna, clareza e presença — começando por si.
+              <br><br>
               Essa jornada não é sobre “consertar” você. É sobre ajudar você a se reconectar com quem sempre esteve aí.
             </p>
           </div>
 
           <div class="photo" aria-label="Foto do facilitador">
-            <!-- Ajuste o path conforme seu projeto -->
-            <img src="images/glauber.jpeg" alt="Glauber" loading="lazy"
-              onerror="this.style.display='none'; this.parentElement.classList.add('photo-fallback'); this.parentElement.textContent='FOTO';">
+            <img src="./glauber.jpg" alt="Glauber" loading="lazy" />
           </div>
         </div>
       </div>
@@ -306,7 +223,7 @@
           <h3>Você merece viver um relacionamento saudável e excepcional.</h3>
           <p>Autoconhecimento não é sobre saber mais. É sobre se relacionar melhor consigo e com o outro.</p>
 
-          <a class="pill btn-primary" href="javascript:void(0)" onclick="openPreCheckoutModal()"
+          <a class="pill btn-primary" href="javascript:void(0)" onclick="openCheckoutModal()"
             aria-label="Garantir minha vaga">
             QUERO GARANTIR MINHA VAGA
           </a>
@@ -320,153 +237,166 @@
   </main>
 
   <!-- =========================================================
-       MODAL 1: "Quero entender se é para mim" (FORM ANTIGO)
-       (entries que vocês já estavam usando)
+       MODAL: Garantir minha vaga (pré-checkout) - Google Form novo
        ========================================================= -->
-  <div class="modal-overlay" id="leadModal" aria-hidden="true">
-    <div class="modal cardish" role="dialog" aria-modal="true" aria-labelledby="leadModalTitle">
-      <div class="modal-top">
-        <div>
-          <h3 class="modal-title" id="leadModalTitle">Vamos conversar 🌿</h3>
-          <p class="modal-sub">Preencha com calma. Em breve entraremos em contato.</p>
-        </div>
-        <button class="modal-x" type="button" data-close-modal="leadModal" aria-label="Fechar">✕</button>
-      </div>
-
-      <form id="leadForm" class="form-grid" novalidate>
-        <div class="field">
-          <label>Nome completo</label>
-          <input name="entry.407392332" placeholder="Seu nome" required autocomplete="name">
-        </div>
-
-        <div class="field">
-          <label>Email</label>
-          <input name="entry.526339929" type="email" placeholder="seuemail@exemplo.com" required autocomplete="email">
-        </div>
-
-        <div class="field">
-          <label>WhatsApp</label>
-          <input name="entry.1559174376" placeholder="(11) 91234-5678" required inputmode="numeric" autocomplete="tel"
-            data-phone-mask>
-          <small class="hint">Formato: (DD) 12345-6789</small>
-        </div>
-
-        <div class="field full">
-          <label>O que você tem vivido que te fez buscar autoconhecimento?</label>
-          <textarea name="entry.804946524" placeholder="Conte com calma..." required></textarea>
-        </div>
-
-        <div class="field full">
-          <label>Como prefere o contato?</label>
-          <div class="choice-group" role="radiogroup" aria-label="Preferência de contato">
-            <input id="lead-pref-email" type="radio" name="entry.268953612" value="Email" required>
-            <label for="lead-pref-email" class="choice"><span class="ico">✉️</span> Prefiro Email</label>
-
-            <input id="lead-pref-wa" type="radio" name="entry.268953612" value="WhatsApp">
-            <label for="lead-pref-wa" class="choice"><span class="ico">💬</span> Prefiro WhatsApp</label>
-
-            <input id="lead-pref-tel" type="radio" name="entry.268953612" value="Telefone">
-            <label for="lead-pref-tel" class="choice"><span class="ico">📞</span> Prefiro Telefone</label>
+  <div class="modal-backdrop checkout-modal" id="promptModal" aria-hidden="true">
+    <div class="modal checkout-card" role="dialog" aria-modal="true" aria-labelledby="promptModalTitle">
+      <div class="checkout-head">
+        <div class="checkout-titlewrap">
+          <h3 class="checkout-title" id="promptModalTitle">Garantir minha vaga ✅</h3>
+          <div class="checkout-subtitle">Antes do pagamento, preencha seus dados para seguirmos com a sua inscrição.
           </div>
         </div>
+        <button class="checkout-close" type="button" id="closePromptModal" aria-label="Fechar">✕</button>
+      </div>
 
-        <button class="pill btn-primary full" type="submit">
-          Enviar
-        </button>
+      <div class="checkout-body">
+        <form class="checkout-form" id="checkoutForm"
+          action="https://docs.google.com/forms/u/0/d/e/1FAIpQLSdHeWEx2NfbnrxQYTne4wl72QzJPVd2lNOa1LjOS2fCyShx1A/formResponse"
+          method="POST" target="_self" novalidate>
 
-        <div class="form-note full">
-          Ao enviar, você concorda em receber contato sobre a Jornada Terapêutica.
-        </div>
+          <div class="checkout-grid">
+            <div class="field">
+              <label for="pc_name">Nome completo <span class="req">*</span></label>
+              <input id="pc_name" name="entry.1408784355" type="text" autocomplete="name" placeholder="Nome completo"
+                required />
+            </div>
 
-        <div class="success" id="leadSuccess" style="display:none">
-          ✨ Obrigado! <br>
-          Em breve entraremos em contato com você.
-        </div>
-      </form>
+            <div class="field">
+              <label for="pc_email">Email <span class="req">*</span></label>
+              <input id="pc_email" name="entry.224218993" type="email" autocomplete="email" placeholder="Email"
+                required />
+            </div>
+
+            <div class="field">
+              <label for="pc_cpf">CPF (opcional)</label>
+              <input id="pc_cpf" name="entry.795371089" type="text" inputmode="numeric" placeholder="CPF (opcional)" />
+            </div>
+
+            <div class="field">
+              <label for="pc_phone">WhatsApp <span class="req">*</span></label>
+              <input id="pc_phone" data-phone-mask name="entry.1927941383" type="tel" inputmode="numeric"
+                placeholder="DD 12345-6789" pattern="^\d{2}\s\d{5}-\d{4}$" title="Use o formato: DD 12345-6789"
+                required />
+            </div>
+
+            <div class="field field-full">
+              <label for="pc_reason">O que te fez buscar a terapia <span class="req">*</span></label>
+              <textarea id="pc_reason" name="entry.2022455327" placeholder="Conte um pouco..." required></textarea>
+            </div>
+
+            <div class="field field-full">
+              <div class="pref-label">Como prefere o contato? <span class="req">*</span></div>
+              <div class="pref-grid" role="radiogroup" aria-label="Preferência de contato">
+                <label class="pref-card">
+                  <input type="radio" name="entry.756664464" value="Email" required />
+                  <span class="pref-pill">📧 Prefiro Email</span>
+                </label>
+
+                <label class="pref-card">
+                  <input type="radio" name="entry.756664464" value="WhatsApp" />
+                  <span class="pref-pill">💬 Prefiro WhatsApp</span>
+                </label>
+
+                <label class="pref-card">
+                  <input type="radio" name="entry.756664464" value="Telefone" />
+                  <span class="pref-pill">📞 Prefiro Telefone</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <button class="checkout-submit" id="checkoutSubmitBtn" type="submit">Continuar para pagamento</button>
+
+          <div class="form-hint">Ao continuar, você será direcionado(a) para o checkout da Hotmart.</div>
+          <div class="form-error" id="checkoutError" aria-live="polite"></div>
+        </form>
+      </div>
     </div>
   </div>
 
   <!-- =========================================================
-       MODAL 2: "Garantir minha vaga" (FORM NOVO)
-       Entries do seu Google Forms:
-       - Nome: entry.1408784355
-       - Email: entry.224218993
-       - CPF: entry.795371089 (opcional)
-       - Celular: entry.1927941383
-       - Motivo: entry.2022455327
-       - Preferência: entry.756664464
+       MODAL: Quero entender se é para mim (mesma estética do checkout)
        ========================================================= -->
-  <div class="modal-overlay" id="preCheckoutModal" aria-hidden="true">
-    <div class="modal cardish" role="dialog" aria-modal="true" aria-labelledby="preCheckoutTitle">
-      <div class="modal-top">
-        <div>
-          <h3 class="modal-title" id="preCheckoutTitle">Garantir minha vaga ✅</h3>
-          <p class="modal-sub">Antes do pagamento, preencha seus dados para seguirmos com a sua inscrição.</p>
+  <div class="modal-backdrop checkout-modal" id="leadModal" aria-hidden="true">
+    <div class="modal checkout-card" role="dialog" aria-modal="true" aria-labelledby="leadModalTitle">
+      <div class="checkout-head">
+        <div class="checkout-titlewrap">
+          <h3 class="checkout-title" id="leadModalTitle">Vamos conversar 🌿</h3>
+          <div class="checkout-subtitle">Preencha com calma. Em breve entraremos em contato.</div>
         </div>
-        <button class="modal-x" type="button" data-close-modal="preCheckoutModal" aria-label="Fechar">✕</button>
+        <button class="checkout-close" type="button" data-close="leadModal" aria-label="Fechar">✕</button>
       </div>
 
-      <form id="preCheckoutForm" class="form-grid" novalidate>
-        <div class="field">
-          <label>Nome completo</label>
-          <input name="entry.1408784355" placeholder="Seu nome completo" required autocomplete="name">
-        </div>
+      <div class="checkout-body">
+        <form class="checkout-form" id="leadForm"
+          action="https://docs.google.com/forms/d/e/1FAIpQLSc343T86qOwMwLlOx4PgyKtW4hqPOBp6NPW2Hz8oXrdYvGw7g/formResponse"
+          method="POST" target="_self" novalidate>
 
-        <div class="field">
-          <label>Email</label>
-          <input name="entry.224218993" type="email" placeholder="seuemail@exemplo.com" required autocomplete="email">
-        </div>
+          <div class="checkout-grid">
+            <div class="field">
+              <label for="leadNome">Nome completo <span class="req">*</span></label>
+              <input id="leadNome" name="entry.407392332" type="text" autocomplete="name" placeholder="Nome completo"
+                required />
+            </div>
 
-        <div class="field">
-          <label>CPF (opcional)</label>
-          <input name="entry.795371089" placeholder="000.000.000-00" autocomplete="off">
-          <small class="hint">Opcional — preencha se desejar.</small>
-        </div>
+            <div class="field">
+              <label for="leadEmail">Email <span class="req">*</span></label>
+              <input id="leadEmail" name="entry.526339929" type="email" autocomplete="email" placeholder="Email"
+                required />
+            </div>
 
-        <div class="field">
-          <label>Celular / WhatsApp</label>
-          <input name="entry.1927941383" placeholder="(11) 91234-5678" required inputmode="numeric" autocomplete="tel"
-            data-phone-mask>
-          <small class="hint">Formato: (DD) 12345-6789</small>
-        </div>
+            <div class="field field-full">
+              <label for="leadWhatsapp">WhatsApp <span class="req">*</span></label>
+              <input id="leadWhatsapp" data-phone-mask name="entry.1559174376" type="tel" inputmode="numeric"
+                placeholder="DD 12345-6789" pattern="^\d{2}\s\d{5}-\d{4}$" title="Use o formato: DD 12345-6789"
+                required />
+            </div>
 
-        <div class="field full">
-          <label>O que te fez buscar essa terapia? O que você deseja transformar?</label>
-          <textarea name="entry.2022455327" placeholder="Escreva em poucas linhas..." required></textarea>
-        </div>
+            <div class="field field-full">
+              <label for="leadMotivo">O que você tem vivido que te fez buscar autoconhecimento? <span
+                  class="req">*</span></label>
+              <textarea id="leadMotivo" name="entry.804946524" placeholder="Conte um pouco..." required></textarea>
+            </div>
 
-        <div class="field full">
-          <label>Como prefere o contato?</label>
+            <div class="field field-full">
+              <div class="pref-label">Como prefere o contato? <span class="req">*</span></div>
+              <div class="pref-grid" role="radiogroup" aria-label="Preferência de contato">
+                <label class="pref-card">
+                  <input type="radio" name="entry.268953612" value="Email" required />
+                  <span class="pref-pill">📧 Email</span>
+                </label>
 
-          <div class="choice-group" role="radiogroup" aria-label="Preferência de contato">
-            <input id="pre-pref-email" type="radio" name="entry.756664464" value="Email" required>
-            <label for="pre-pref-email" class="choice"><span class="ico">✉️</span> Prefiro Email</label>
+                <label class="pref-card">
+                  <input type="radio" name="entry.268953612" value="WhatsApp" />
+                  <span class="pref-pill">💬 WhatsApp</span>
+                </label>
 
-            <input id="pre-pref-wa" type="radio" name="entry.756664464" value="WhatsApp">
-            <label for="pre-pref-wa" class="choice"><span class="ico">💬</span> Prefiro WhatsApp</label>
-
-            <input id="pre-pref-tel" type="radio" name="entry.756664464" value="Telefone">
-            <label for="pre-pref-tel" class="choice"><span class="ico">📞</span> Prefiro Telefone</label>
+                <label class="pref-card">
+                  <input type="radio" name="entry.268953612" value="Telefone" />
+                  <span class="pref-pill">📞 Telefone</span>
+                </label>
+              </div>
+            </div>
           </div>
-        </div>
 
-        <button class="pill btn-primary full" type="submit" id="preCheckoutSubmitBtn">
-          Continuar para pagamento
-        </button>
+          <button class="checkout-submit" type="submit" id="leadSubmitBtn">Enviar</button>
 
-        <div class="form-note full">
-          Ao continuar, você será direcionado(a) para o checkout da Hotmart.
-        </div>
+          <div class="form-hint">Ao enviar, você concorda em receber contato para agendamento.</div>
+          <div class="form-error" id="leadError" aria-live="polite"></div>
+        </form>
 
-        <div class="success" id="preCheckoutSuccess" style="display:none">
-          ✅ Dados enviados! <br>
-          Agora vamos te levar para o pagamento.
+        <div class="checkout-success" id="leadSuccess" style="display:none">
+          <div class="success-title">✨ Obrigado!</div>
+          <div class="success-text">Em breve entraremos em contato com você.</div>
+          <button class="checkout-submit" type="button" data-close="leadModal">Fechar</button>
         </div>
-      </form>
+      </div>
     </div>
   </div>
 
   <script src="./script.js"></script>
+  <script async src="https://www.youtube.com/iframe_api"></script>
 </body>
 
 </html>
