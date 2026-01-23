@@ -1,320 +1,385 @@
-/* =========================
-   CONFIGURAÇÕES IMPORTANTES
-   ========================= */
+/* =========================================================
+   CONFIG
+   ========================================================= */
 
-// 1) Checkout Hotmart (troque pela sua URL real)
-const HOTMART_CHECKOUT_URL = "https://pay.hotmart.com/SEU_CHECKOUT_AQUI";
+// Form 1: "Quero entender se é para mim"
+const LEAD_FORM_ACTION =
+  "https://docs.google.com/forms/d/e/1FAIpQLSc343T86qOwMwLlOx4PgyKtW4hqPOBp6NPW2Hz8oXrdYvGw7g/formResponse";
 
-// 2) Google Forms (Lead + Pré-checkout)
-// Troque pelos seus links reais de formResponse e os entry.ID reais.
-// Exemplo de endpoint: https://docs.google.com/forms/d/e/SEU_ID/formResponse
-const GOOGLE_FORMS = {
-  lead: {
-    endpoint: "", // <-- coloque aqui
-    // mapeamento (name do input -> entry.X)
-    map: {
-      "entry.NOME": "entry.407392332",
-      "entry.EMAIL": "entry.526339929",
-      "entry.WHATS": "entry.1559174376",
-      "entry.MOTIVO": "entry.804946524",
-      "entry.CONTATO": "entry.268953612"
-    }
-  },
-  checkout: {
-    endpoint: "", // <-- coloque aqui
-    map: {
-      "entry.NOME": "entry.407392332",
-      "entry.EMAIL": "entry.526339929",
-      "entry.CPF": "entry.000000000",      // opcional (troque)
-      "entry.WHATS": "entry.1559174376",
-      "entry.OBJETIVO": "entry.804946524", // troque se for outro
-      "entry.CONTATO": "entry.268953612"
-    }
-  }
-};
+// Form 2: "Garantir minha vaga" (NOVO que você mandou)
+const PRECHECKOUT_FORM_ACTION =
+  "https://docs.google.com/forms/u/0/d/e/1FAIpQLSdHeWEx2NfbnrxQYTne4wl72QzJPVd2lNOa1LjOS2fCyShx1A/formResponse";
 
-// 3) “Abrir formulário quando termina o vídeo” apenas 1ª visita
-const FIRST_VISIT_KEY = "lp_first_visit_done";
-const VIDEO_MODAL_OPENED_KEY = "lp_video_modal_opened";
+// Checkout Hotmart (troque pela sua URL final do checkout)
+const HOTMART_CHECKOUT_URL = "https://pay.hotmart.com/"; // <-- troque aqui pela URL exata do seu produto
 
-/* =========================
+/* =========================================================
    HELPERS
-   ========================= */
+   ========================================================= */
 
-function qs(sel) { return document.querySelector(sel); }
-function qsa(sel) { return Array.from(document.querySelectorAll(sel)); }
+function qs(sel, root = document) { return root.querySelector(sel); }
+function qsa(sel, root = document) { return Array.from(root.querySelectorAll(sel)); }
 
-function lockScroll(lock) {
-  document.body.style.overflow = lock ? "hidden" : "";
+function openModal(modalId) {
+  const modal = qs(`#${modalId}`);
+  if (!modal) return;
+
+  modal.classList.add("is-open");
+  modal.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
 }
 
-function openOverlay(el) {
-  el.classList.add("is-open");
-  el.setAttribute("aria-hidden", "false");
-  lockScroll(true);
+function closeModal(modalId) {
+  const modal = qs(`#${modalId}`);
+  if (!modal) return;
+
+  modal.classList.remove("is-open");
+  modal.setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
 }
 
-function closeOverlay(el) {
-  el.classList.remove("is-open");
-  el.setAttribute("aria-hidden", "true");
-  lockScroll(false);
-}
+window.openLeadModal = () => openModal("leadModal");
+window.openPreCheckoutModal = () => openModal("preCheckoutModal");
 
-function isFirstVisit() {
-  return !localStorage.getItem(FIRST_VISIT_KEY);
-}
+/* Close modal by clicking X or background */
+(function bindModalClose() {
+  qsa("[data-close-modal]").forEach(btn => {
+    btn.addEventListener("click", () => closeModal(btn.getAttribute("data-close-modal")));
+  });
 
-function markVisited() {
-  localStorage.setItem(FIRST_VISIT_KEY, "1");
-}
-
-/**
- * Envia para Google Forms via POST no-cors
- * (sem depender de backend)
- */
-async function postToGoogleForms(formEl, cfg) {
-  if (!cfg?.endpoint) return { ok: false, skipped: true };
-
-  const fd = new FormData();
-  const raw = new FormData(formEl);
-
-  for (const [k, v] of raw.entries()) {
-    const entryKey = cfg.map[k];
-    if (!entryKey) continue;
-    fd.append(entryKey, v);
-  }
-
-  try {
-    await fetch(cfg.endpoint, {
-      method: "POST",
-      mode: "no-cors",
-      body: fd
+  qsa(".modal-overlay").forEach(overlay => {
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) closeModal(overlay.id);
     });
-    return { ok: true };
-  } catch (e) {
-    return { ok: false, error: e };
-  }
-}
-
-/* =========================
-   MENU HAMBURGER (drawer)
-   ========================= */
-
-(function initDrawer() {
-  const btn = qs("#hamburgerBtn");
-  const backdrop = qs("#drawerBackdrop");
-  const closeBtn = qs("#drawerClose");
-
-  if (!btn || !backdrop || !closeBtn) return;
-
-  function openDrawer() {
-    backdrop.classList.add("is-open");
-    backdrop.setAttribute("aria-hidden", "false");
-    btn.setAttribute("aria-expanded", "true");
-    lockScroll(true);
-  }
-
-  function closeDrawer() {
-    backdrop.classList.remove("is-open");
-    backdrop.setAttribute("aria-hidden", "true");
-    btn.setAttribute("aria-expanded", "false");
-    lockScroll(false);
-  }
-
-  btn.addEventListener("click", openDrawer);
-  closeBtn.addEventListener("click", closeDrawer);
-
-  backdrop.addEventListener("click", (e) => {
-    if (e.target === backdrop) closeDrawer();
   });
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && backdrop.classList.contains("is-open")) closeDrawer();
-  });
-
-  // Fechar ao clicar em links
-  qsa("#navlinks a").forEach(a => {
-    a.addEventListener("click", () => closeDrawer());
-  });
-
-  // Ações no drawer
-  const drawerLeadBtn = qs("#drawerLeadBtn");
-  const drawerCheckoutBtn = qs("#drawerCheckoutBtn");
-
-  drawerLeadBtn?.addEventListener("click", () => {
-    closeDrawer();
-    openLeadModal();
-  });
-
-  drawerCheckoutBtn?.addEventListener("click", () => {
-    closeDrawer();
-    openCheckoutModal();
+    if (e.key === "Escape") {
+      qsa(".modal-overlay.is-open").forEach(m => closeModal(m.id));
+      closeMobileMenu();
+    }
   });
 })();
 
-/* =========================
-   MODAIS
-   ========================= */
+/* =========================================================
+   NAV ACTIVE (IntersectionObserver)
+   ========================================================= */
+(function navHighlight() {
+  const links = qsa('#navlinks a[data-target]');
+  const sections = links.map(a => qs(`#${a.dataset.target}`)).filter(Boolean);
+  if (!('IntersectionObserver' in window) || sections.length === 0) return;
 
-const leadModal = qs("#leadModal");
-const checkoutModal = qs("#checkoutModal");
+  const setActive = (id) => links.forEach(a => a.classList.toggle('active', a.dataset.target === id));
 
-function openLeadModal() {
-  if (!leadModal) return;
-  openOverlay(leadModal);
-}
-
-function closeLeadModal() {
-  if (!leadModal) return;
-  closeOverlay(leadModal);
-}
-
-function openCheckoutModal() {
-  if (!checkoutModal) return;
-  openOverlay(checkoutModal);
-}
-
-function closeCheckoutModal() {
-  if (!checkoutModal) return;
-  closeOverlay(checkoutModal);
-}
-
-(function initModals() {
-  // Botões de abrir
-  qs("#openLeadBtn")?.addEventListener("click", openLeadModal);
-  qs("#openLeadBtn2")?.addEventListener("click", openLeadModal);
-
-  qs("#openCheckoutBtn")?.addEventListener("click", openCheckoutModal);
-  qs("#openCheckoutBtn2")?.addEventListener("click", openCheckoutModal);
-  qs("#topCtaBtn")?.addEventListener("click", openCheckoutModal); // CTA do header abre prompt (não rola)
-
-  // Botões de fechar
-  qs("#closeLeadModal")?.addEventListener("click", closeLeadModal);
-  qs("#closeCheckoutModal")?.addEventListener("click", closeCheckoutModal);
-
-  // Fechar clicando fora
-  leadModal?.addEventListener("click", (e) => { if (e.target === leadModal) closeLeadModal(); });
-  checkoutModal?.addEventListener("click", (e) => { if (e.target === checkoutModal) closeCheckoutModal(); });
-
-  // Esc fecha
-  document.addEventListener("keydown", (e) => {
-    if (e.key !== "Escape") return;
-    if (leadModal?.classList.contains("is-open")) closeLeadModal();
-    if (checkoutModal?.classList.contains("is-open")) closeCheckoutModal();
+  const obs = new IntersectionObserver((entries) => {
+    const visible = entries
+      .filter(e => e.isIntersecting)
+      .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+    if (visible?.target?.id) setActive(visible.target.id);
+  }, {
+    root: null,
+    rootMargin: `-${Math.round(parseInt(getComputedStyle(document.documentElement).getPropertyValue('--headerH')) + 10)}px 0px -60% 0px`,
+    threshold: [0.15, 0.25, 0.4, 0.6, 0.8]
   });
+
+  sections.forEach(sec => obs.observe(sec));
+  setActive(sections[0].id);
 })();
 
-/* =========================
-   FORM: LEAD
-   ========================= */
+/* =========================================================
+   MOBILE MENU
+   ========================================================= */
+const hamburgerBtn = qs("#hamburgerBtn");
+const mobileMenu = qs("#mobileMenu");
+const mobileBackdrop = qs("#mobileMenuBackdrop");
+const mobileCloseBtn = qs("#mobileCloseBtn");
 
-(function initLeadForm() {
+function openMobileMenu() {
+  if (!mobileMenu || !mobileBackdrop || !hamburgerBtn) return;
+  mobileMenu.classList.add("is-open");
+  mobileBackdrop.classList.add("is-open");
+  mobileMenu.setAttribute("aria-hidden", "false");
+  mobileBackdrop.setAttribute("aria-hidden", "false");
+  hamburgerBtn.setAttribute("aria-expanded", "true");
+}
+
+function closeMobileMenu() {
+  if (!mobileMenu || !mobileBackdrop || !hamburgerBtn) return;
+  mobileMenu.classList.remove("is-open");
+  mobileBackdrop.classList.remove("is-open");
+  mobileMenu.setAttribute("aria-hidden", "true");
+  mobileBackdrop.setAttribute("aria-hidden", "true");
+  hamburgerBtn.setAttribute("aria-expanded", "false");
+}
+
+if (hamburgerBtn) hamburgerBtn.addEventListener("click", () => {
+  const isOpen = mobileMenu.classList.contains("is-open");
+  isOpen ? closeMobileMenu() : openMobileMenu();
+});
+
+if (mobileCloseBtn) mobileCloseBtn.addEventListener("click", closeMobileMenu);
+if (mobileBackdrop) mobileBackdrop.addEventListener("click", closeMobileMenu);
+
+qsa("[data-mobile-link]").forEach(a => {
+  a.addEventListener("click", () => closeMobileMenu());
+});
+
+/* =========================================================
+   INPUT MASK: (DD) 12345-6789
+   - Aceita 10 ou 11 dígitos: (11) 1234-5678 ou (11) 91234-5678
+   - Você pediu o modelo: DDD 12345-6789 (vamos priorizar 11 dígitos)
+   ========================================================= */
+function onlyDigits(str) {
+  return (str || "").replace(/\D/g, "");
+}
+
+function formatPhoneBR(value) {
+  const d = onlyDigits(value).slice(0, 11);
+
+  // DDD
+  const ddd = d.slice(0, 2);
+  const rest = d.slice(2);
+
+  if (!ddd) return "";
+
+  // 11 dígitos: 9XXXX-XXXX
+  if (d.length >= 11) {
+    const p1 = rest.slice(0, 5);
+    const p2 = rest.slice(5, 9);
+    return `(${ddd}) ${p1}${p2 ? "-" + p2 : ""}`.trim();
+  }
+
+  // 10 dígitos: XXXX-XXXX
+  const p1 = rest.slice(0, 4);
+  const p2 = rest.slice(4, 8);
+  return `(${ddd}) ${p1}${p2 ? "-" + p2 : ""}`.trim();
+}
+
+function bindPhoneMasks() {
+  qsa("[data-phone-mask]").forEach(input => {
+    input.addEventListener("input", () => {
+      const cursorStart = input.selectionStart || 0;
+      const before = input.value;
+
+      input.value = formatPhoneBR(input.value);
+
+      // Cursor handling simples (sem quebrar a digitação)
+      const diff = input.value.length - before.length;
+      const nextPos = Math.max(0, cursorStart + diff);
+      try { input.setSelectionRange(nextPos, nextPos); } catch { }
+    });
+
+    // ao focar, se vazio, não adiciona nada
+    input.addEventListener("blur", () => {
+      input.value = formatPhoneBR(input.value);
+    });
+  });
+}
+bindPhoneMasks();
+
+/* =========================================================
+   VALIDATION
+   ========================================================= */
+
+function markInvalid(el, isInvalid) {
+  if (!el) return;
+  el.classList.toggle("is-invalid", !!isInvalid);
+}
+
+function isValidEmail(email) {
+  // validação robusta o suficiente pro front
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i.test(String(email || "").trim());
+}
+
+function isValidPhoneMasked(phoneValue) {
+  const digits = onlyDigits(phoneValue);
+  // 10 ou 11 dígitos (DDD + número)
+  return digits.length === 10 || digits.length === 11;
+}
+
+function validateForm(form) {
+  let ok = true;
+
+  // limpa invalids
+  qsa("input, textarea", form).forEach(el => markInvalid(el, false));
+
+  // required
+  qsa("[required]", form).forEach(el => {
+    const val = (el.value || "").trim();
+
+    // radio group
+    if (el.type === "radio") {
+      const name = el.name;
+      const anyChecked = qsa(`input[type="radio"][name="${CSS.escape(name)}"]`, form).some(r => r.checked);
+      if (!anyChecked) {
+        // marca todos radios desse grupo como "inválido" via label (ux)
+        qsa(`input[type="radio"][name="${CSS.escape(name)}"]`, form).forEach(r => {
+          const lbl = form.querySelector(`label[for="${r.id}"]`);
+          if (lbl) lbl.style.outline = "2px solid rgba(210, 60, 60, .35)";
+          setTimeout(() => { if (lbl) lbl.style.outline = ""; }, 1800);
+        });
+        ok = false;
+      }
+      return;
+    }
+
+    if (!val) {
+      markInvalid(el, true);
+      ok = false;
+    }
+  });
+
+  // email fields
+  qsa('input[type="email"]', form).forEach(el => {
+    if (!el.value.trim()) return; // required já pega
+    if (!isValidEmail(el.value)) {
+      markInvalid(el, true);
+      ok = false;
+    }
+  });
+
+  // phone masked inputs
+  qsa("[data-phone-mask]", form).forEach(el => {
+    if (!el.value.trim()) return; // required já pega
+    if (!isValidPhoneMasked(el.value)) {
+      markInvalid(el, true);
+      ok = false;
+    }
+  });
+
+  // foca no primeiro inválido
+  if (!ok) {
+    const first = qs(".is-invalid", form);
+    if (first) first.focus();
+  }
+
+  return ok;
+}
+
+/* =========================================================
+   SUBMIT (Google Forms)
+   ========================================================= */
+
+async function postToGoogleForms(actionUrl, formEl) {
+  const formData = new FormData(formEl);
+
+  // Google Forms gosta de POST application/x-www-form-urlencoded
+  const body = new URLSearchParams();
+  for (const [k, v] of formData.entries()) {
+    body.append(k, v);
+  }
+
+  // no-cors: não dá para ler a resposta, mas envia
+  await fetch(actionUrl, {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+    body
+  });
+}
+
+/* =========================================================
+   FORM 1: LeadForm (Entender se é para mim)
+   ========================================================= */
+(function bindLeadForm() {
   const form = qs("#leadForm");
   const success = qs("#leadSuccess");
+
   if (!form) return;
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
+    if (!validateForm(form)) return;
 
-    const btn = form.querySelector("button[type='submit']");
-    const old = btn?.textContent;
-    if (btn) { btn.disabled = true; btn.textContent = "Enviando..."; }
-
-    await postToGoogleForms(form, GOOGLE_FORMS.lead);
-
-    // UI success
-    if (success) success.style.display = "block";
-    form.querySelectorAll("input,textarea,button").forEach(el => el.disabled = true);
-
-    setTimeout(() => {
-      closeLeadModal();
-      // reset visual (se quiser, comente)
-      // location.reload();
-    }, 1200);
-
-    if (btn) { btn.disabled = true; btn.textContent = old || "Enviado"; }
-  });
-})();
-
-/* =========================
-   FORM: PRÉ-CHECKOUT
-   - Envia dados para Google Forms (se configurado)
-   - Abre checkout Hotmart
-   ========================= */
-
-(function initCheckoutForm() {
-  const form = qs("#checkoutForm");
-  const success = qs("#checkoutSuccess");
-  if (!form) return;
-
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const btn = form.querySelector("button[type='submit']");
-    const old = btn?.textContent;
-    if (btn) { btn.disabled = true; btn.textContent = "Enviando..."; }
-
-    await postToGoogleForms(form, GOOGLE_FORMS.checkout);
-
-    if (success) success.style.display = "block";
-
-    // Fecha modal e abre checkout
-    setTimeout(() => {
-      closeCheckoutModal();
-
-      if (HOTMART_CHECKOUT_URL && HOTMART_CHECKOUT_URL.includes("http")) {
-        window.open(HOTMART_CHECKOUT_URL, "_blank", "noopener");
-      } else {
-        alert("⚠️ Configure a URL do checkout Hotmart no script.js");
-      }
-    }, 700);
-
-    if (btn) { btn.disabled = false; btn.textContent = old || "Continuar para pagamento"; }
-  });
-})();
-
-/* =========================
-   ABRIR FORM AO FINAL DO VÍDEO (1ª visita)
-   - usa YouTube IFrame API
-   ========================= */
-
-let ytPlayer = null;
-
-window.onYouTubeIframeAPIReady = function () {
-  const iframeEl = document.getElementById("ytPlayer");
-  if (!iframeEl) return;
-
-  ytPlayer = new YT.Player("ytPlayer", {
-    events: {
-      onStateChange: onPlayerStateChange
+    try {
+      await postToGoogleForms(LEAD_FORM_ACTION, form);
+      form.style.display = "none";
+      if (success) success.style.display = "block";
+      // fecha depois de um tempo (opcional)
+      setTimeout(() => closeModal("leadModal"), 2200);
+    } catch (err) {
+      alert("Não conseguimos enviar agora. Tente novamente em instantes.");
+      console.error(err);
     }
   });
-};
+})();
 
-function onPlayerStateChange(event) {
-  // 0 = ended
-  if (event.data !== YT.PlayerState.ENDED) return;
+/* =========================================================
+   FORM 2: PreCheckoutForm (Garantir minha vaga)
+   - envia pro Google Forms novo
+   - depois redireciona pro checkout da Hotmart
+   ========================================================= */
+(function bindPreCheckoutForm() {
+  const form = qs("#preCheckoutForm");
+  const success = qs("#preCheckoutSuccess");
+  const btn = qs("#preCheckoutSubmitBtn");
 
-  // só na primeira visita + só 1 vez
-  if (!isFirstVisit()) return;
-  if (localStorage.getItem(VIDEO_MODAL_OPENED_KEY)) return;
+  if (!form) return;
 
-  localStorage.setItem(VIDEO_MODAL_OPENED_KEY, "1");
-  markVisited();
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!validateForm(form)) return;
 
-  // abre o modal lead ao terminar
-  openLeadModal();
-}
+    if (btn) {
+      btn.disabled = true;
+      btn.style.opacity = "0.85";
+      btn.textContent = "Enviando dados...";
+    }
 
-/* =========================
-   (IMPORTANTE) E-MAIL PÓS PAGAMENTO
-   =========================
-   Front-end NÃO consegue saber se a pessoa pagou na Hotmart.
-   O correto é:
-   - configurar Webhook da Hotmart (evento: purchase approved)
-   - no webhook: enviar email para o cliente + notificar o Glauber
-   Isso exige:
-   - backend (Node/Express) OU
-   - automação (Make/Zapier) OU
-   - Google Apps Script (com endpoint)
+    try {
+      await postToGoogleForms(PRECHECKOUT_FORM_ACTION, form);
+
+      form.style.display = "none";
+      if (success) success.style.display = "block";
+
+      // Redireciona para Hotmart
+      setTimeout(() => {
+        window.location.href = HOTMART_CHECKOUT_URL;
+      }, 1300);
+    } catch (err) {
+      alert("Não conseguimos enviar agora. Tente novamente em instantes.");
+      console.error(err);
+      if (btn) {
+        btn.disabled = false;
+        btn.style.opacity = "";
+        btn.textContent = "Continuar para pagamento";
+      }
+    }
+  });
+})();
+
+/* =========================================================
+   AUTO-OPEN FORM APÓS "assistir o vídeo" (somente 1ª visita)
+   =========================================================
+   - Para YouTube iframe embed normal, NÃO dá pra detectar o fim do vídeo sem usar a YouTube Iframe API.
+   - Aqui deixo um fallback inteligente:
+     1) Se for a primeira visita, após X segundos na seção do vídeo, abre o modal 1 ("entender se é para mim").
+   - Se você quiser detecção REAL de final do vídeo, me diga e eu coloco a YouTube Iframe API certinho.
 */
+(function firstVisitVideoPromptFallback() {
+  const KEY = "glauber_first_visit_prompted_v1";
+  if (localStorage.getItem(KEY) === "1") return;
+
+  const videoSection = qs("#video");
+  if (!videoSection || !("IntersectionObserver" in window)) return;
+
+  let timer = null;
+  const obs = new IntersectionObserver((entries) => {
+    const seen = entries.some(e => e.isIntersecting && e.intersectionRatio > 0.45);
+    if (seen) {
+      if (!timer) {
+        timer = setTimeout(() => {
+          // marca como já exibido
+          localStorage.setItem(KEY, "1");
+          // abre modal do lead
+          openModal("leadModal");
+          obs.disconnect();
+        }, 35_000); // 35s dentro/na seção do vídeo
+      }
+    } else {
+      if (timer) { clearTimeout(timer); timer = null; }
+    }
+  }, { threshold: [0.15, 0.3, 0.45, 0.6] });
+
+  obs.observe(videoSection);
+})();
