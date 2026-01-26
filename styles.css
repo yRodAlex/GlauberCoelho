@@ -87,7 +87,6 @@ body {
   border-bottom: 1px solid rgba(58, 39, 95, .10);
   z-index: 50;
 }
-
 .header-inner {
   height: var(--headerH);
   display: grid;
@@ -95,7 +94,6 @@ body {
   align-items: center;
   gap: 10px;
 }
-
 .brand {
   justify-self: center;
   font-family: "Playfair Display", serif;
@@ -106,7 +104,6 @@ body {
   font-size: 18px;
   white-space: nowrap;
 }
-
 .header-spacer { width: 56px; }
 
 /* Hamburger bonito */
@@ -330,18 +327,18 @@ footer {
 }
 .modal-overlay.is-open { display: flex; }
 
-/* ✅ CORREÇÃO: modal agora redimensiona e não estoura no mobile */
+/* modal redimensiona */
 .modal {
   background: #fff;
   border-radius: 22px;
   width: min(860px, 96%);
-  max-height: 86vh;               /* <-- limite para caber no celular */
-  display: flex;                   /* <-- permite header + corpo rolável */
+  max-height: 86vh;
+  display: flex;
   flex-direction: column;
   padding: 0;
   box-shadow: 0 30px 80px rgba(0,0,0,.35);
   border: 1px solid rgba(58,39,95,.12);
-  overflow: hidden;                /* <-- mantém borda perfeita */
+  overflow: hidden;
 }
 
 .modal-head {
@@ -377,18 +374,25 @@ footer {
 }
 .modal-close:hover { background: rgba(58, 39, 95, .16); }
 
-/* ✅ CORREÇÃO: conteúdo do form rola dentro do modal */
+/* ✅ AQUI: ARRUMO O LAYOUT INTERNO DO FORM */
 .form-grid {
   padding: 16px 18px 18px;
   display: grid;
   gap: 14px;
-  overflow: auto;                 /* <-- rolagem interna */
+  overflow: auto;
   -webkit-overflow-scrolling: touch;
   flex: 1 1 auto;
 }
 
-.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+/* colunas não “quebram” feio e não esmagam input */
+.two-col {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 14px;
+}
 
+/* impede overflow dos inputs dentro do grid */
+.field { min-width: 0; }
 .field label {
   display: inline-flex;
   gap: 6px;
@@ -411,6 +415,7 @@ footer {
   font-family: Inter, sans-serif;
   background: rgba(249,249,251,.75);
   outline: none;
+  min-height: 48px;
 }
 
 .field input:focus,
@@ -419,17 +424,22 @@ footer {
   box-shadow: 0 0 0 4px rgba(58,39,95,.08);
 }
 
-/* ✅ CORREÇÃO: textarea não estoura no mobile */
 .field textarea {
   resize: vertical;
-  min-height: 110px;
+  min-height: 120px;
   max-height: 28vh;
 }
 
-.segmented { display: flex; gap: 10px; flex-wrap: wrap; }
+/* ✅ radios “bonitos” e alinhados: grid em 3 colunas no desktop */
+.segmented {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  align-items: stretch;
+}
 
 .seg {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 10px;
   padding: 12px 14px;
@@ -438,9 +448,26 @@ footer {
   background: rgba(58,39,95,.04);
   cursor: pointer;
   user-select: none;
+  min-height: 48px;
 }
-.seg input { accent-color: var(--deep); }
-.seg span { font-weight: 800; color: rgba(36,26,56,.85); }
+
+.seg input {
+  accent-color: var(--deep);
+  margin: 0;
+  transform: translateY(1px);
+}
+.seg span {
+  font-weight: 800;
+  color: rgba(36,26,56,.85);
+  line-height: 1.2;
+}
+
+/* feedback visual quando selecionado */
+.seg:has(input:checked) {
+  background: rgba(58,39,95,.08);
+  border-color: rgba(58,39,95,.22);
+  box-shadow: 0 10px 22px rgba(20,10,40,.08);
+}
 
 .modal-submit { width: 100%; justify-content: center; margin-top: 4px; padding: 16px 18px; }
 
@@ -452,7 +479,7 @@ footer {
   margin-top: -4px;
 }
 
-/* FAB carrinho (canto inferior direito) */
+/* FAB carrinho */
 .fab-cart {
   position: fixed;
   right: 18px;
@@ -497,17 +524,20 @@ footer {
   .hero-media { justify-self: center; max-width: 520px; }
   .grid-2 { grid-template-columns: 1fr; }
   .bio { grid-template-columns: 1fr; }
-  .two-col { grid-template-columns: 1fr; }
 }
 
+/* ✅ no mobile: colunas viram 1 e radios viram lista bonita */
+@media (max-width: 640px) {
+  .two-col { grid-template-columns: 1fr; }
+  .segmented { grid-template-columns: 1fr; }
+}
+
+/* ajustes finos do modal */
 @media (max-width: 520px) {
-  /* ✅ só para o modal caber perfeito (sem mudar estética) */
   .modal-overlay { padding: 14px; }
   .modal { width: min(520px, 92%); border-radius: 18px; max-height: 88vh; }
   .modal-head { padding: 14px 14px; }
   .form-grid { padding: 14px 14px 14px; }
-  .segmented { gap: 8px; }
-  .seg { width: 100%; justify-content: space-between; }
 }
 
 @media (max-width: 420px) {

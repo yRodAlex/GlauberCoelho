@@ -181,7 +181,6 @@
       return;
     }
 
-    // direto pro checkout
     closeModal('precheckoutModal');
     form.reset();
     window.location.href = HOTMART_CHECKOUT_URL;
