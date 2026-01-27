@@ -1,4 +1,3 @@
-<!-- index.html -->
 <!doctype html>
 <html lang="pt-BR">
 
@@ -20,28 +19,48 @@
 </head>
 
 <body>
-  <!-- HEADER SIMPLES -->
-  <header class="site-header" id="siteHeader">
+  <!-- HEADER -->
+  <header class="site-header">
     <div class="container header-inner">
-      <!-- Hamburger -->
+      <!-- Mobile: hamburger only -->
       <button class="hamburger" id="hamburgerBtn" type="button" aria-label="Abrir menu" aria-controls="mobileMenu"
         aria-expanded="false">
-        <span class="hamburger-icon" aria-hidden="true"></span>
+        ☰
       </button>
 
-      <!-- Título -->
       <a class="brand" href="#top" aria-label="Ir para o topo">Jornada Terapêutica</a>
 
-      <!-- Espaçador p/ centralizar o título -->
-      <div class="header-spacer" aria-hidden="true"></div>
+      <!-- Desktop menu -->
+      <nav class="navlinks" id="navlinks" aria-label="Menu">
+        <a href="#para-quem" data-target="para-quem">Para Quem</a>
+        <a href="#como-funciona" data-target="como-funciona">Como Funciona</a>
+        <a href="#facilitador" data-target="facilitador">Facilitador</a>
+      </nav>
+
+      <!-- Desktop CTA (não some no desktop) -->
+      <button class="pill btn-primary header-cta" type="button" id="openCheckoutBtn">
+        Garantir minha vaga
+      </button>
+
+      <!-- Mobile right spacer (pra centralizar o título) -->
+      <span class="header-spacer" aria-hidden="true"></span>
     </div>
 
-    <!-- MENU MOBILE (dropdown) -->
+    <!-- Mobile menu drawer -->
     <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
-      <div class="mobile-menu-inner">
-        <a href="#para-quem" class="mobile-link">Para Quem</a>
-        <a href="#como-funciona" class="mobile-link">Como Funciona</a>
-        <a href="#facilitador" class="mobile-link">Facilitador</a>
+      <div class="mobile-menu-card" role="dialog" aria-modal="true" aria-label="Menu">
+        <div class="mobile-menu-head">
+          <strong>Menu</strong>
+          <button class="mobile-menu-close" type="button" id="closeMobileMenu" aria-label="Fechar menu">✕</button>
+        </div>
+        <div class="mobile-menu-links">
+          <a href="#para-quem" data-target="para-quem" class="mobileLink">Para Quem</a>
+          <a href="#como-funciona" data-target="como-funciona" class="mobileLink">Como Funciona</a>
+          <a href="#facilitador" data-target="facilitador" class="mobileLink">Facilitador</a>
+        </div>
+        <button class="pill btn-primary mobile-cta" type="button" id="openCheckoutBtnMobile">
+          Garantir minha vaga
+        </button>
       </div>
     </div>
   </header>
@@ -57,12 +76,12 @@
             <p>Um caminho estruturado para compreender, ressignificar e reorganizar sua forma de se relacionar.</p>
 
             <div class="hero-cta">
-              <a class="pill btn-white"
-                href="https://wa.me/5512981402217?text=Quero%20come%C3%A7ar%20a%20minha%20jornada" target="_blank"
-                rel="noopener">Quero iniciar minha jornada</a>
+              <a class="pill btn-white" href="https://wa.me/5512981402217?text=Quero%20come%C3%A7ar%20a%20minha%20jornada"
+                target="_blank" rel="noopener">Quero iniciar minha jornada</a>
 
-              <a class="pill btn-secondary" href="javascript:void(0)" id="openLeadModalHero">Quero entender se é para
-                mim</a>
+              <button class="pill btn-secondary" type="button" id="openLeadBtn">
+                Quero entender se é para mim
+              </button>
             </div>
           </div>
 
@@ -97,15 +116,17 @@
 
         <div class="video-grid">
           <div class="video" aria-label="Vídeo de apresentação">
-            <iframe id="youtubePlayer" src="https://www.youtube.com/embed/dQw4w9WgXcQ?enablejsapi=1"
-              title="Vídeo de apresentação" loading="lazy"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowfullscreen></iframe>
+            <!-- Mantém o mesmo embed (o JS usa API do YouTube se você colocar um ID válido) -->
+            <div id="ytPlayer"></div>
           </div>
 
           <div class="cta-pair">
-            <a class="pill btn-secondary" href="javascript:void(0)" id="openLeadModalVideo">Quero entender se é para
-              mim</a>
+            <a class="pill btn-primary" href="https://wa.me/5512981402217?text=Quero%20come%C3%A7ar%20a%20minha%20jornada"
+              target="_blank" rel="noopener">Quero iniciar minha jornada</a>
+
+            <button class="pill btn-secondary" type="button" id="openLeadBtn2">
+              Quero entender se é para mim
+            </button>
           </div>
         </div>
       </div>
@@ -194,9 +215,26 @@
               Essa jornada não é sobre “consertar” você. É sobre ajudar você a se reconectar com quem sempre esteve aí.
             </p>
           </div>
+
           <div class="photo" aria-label="Foto do facilitador">
-            <img class="photo-img" src="./assets/glauber.jpg" alt="Glauber" loading="lazy">
+            <img src="./assets/glauber.jpg" alt="Glauber" loading="lazy" onerror="this.style.display='none';" />
+            <div class="photo-fallback">Glauber</div>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA FINAL -->
+    <section id="cta-final" class="section final">
+      <div class="container">
+        <div class="cta-card">
+          <h3>Você merece viver um relacionamento saudável e excepcional.</h3>
+          <p>Autoconhecimento não é sobre saber mais. É sobre se relacionar melhor consigo e com o outro.</p>
+
+          <a class="pill btn-primary" href="https://wa.me/5512981402217?text=Quero%20come%C3%A7ar%20a%20minha%20jornada"
+            target="_blank" rel="noopener" aria-label="Começar transformação no WhatsApp">
+            QUERO COMEÇAR MINHA TRANSFORMAÇÃO
+          </a>
         </div>
       </div>
     </section>
@@ -206,18 +244,14 @@
     </footer>
   </main>
 
-  <!-- BOTÃO FLUTUANTE (CARRINHO) -->
-  <button class="fab-cart" id="fabCart" type="button" aria-label="Abrir checkout">
-    <span class="fab-glow" aria-hidden="true"></span>
-    <svg class="fab-icon" viewBox="0 0 24 24" aria-hidden="true">
-      <path
-        d="M6.2 6.6h14l-1.7 8.4a2 2 0 0 1-2 1.6H8.1a2 2 0 0 1-2-1.6L4.6 3.8H2.5a.9.9 0 1 1 0-1.8h2.8c.4 0 .8.3.9.7L6.2 6.6Zm2.2 17a1.4 1.4 0 1 1 0-2.8 1.4 1.4 0 0 1 0 2.8Zm9.2 0a1.4 1.4 0 1 1 0-2.8 1.4 1.4 0 0 1 0 2.8Z" />
-    </svg>
+  <!-- FLOATING CART (sempre no canto inferior direito) -->
+  <button class="floating-cart" type="button" id="floatingCart" aria-label="Abrir checkout">
+    🛒
   </button>
 
   <!-- MODAL: "Quero entender se é para mim" -->
   <div class="modal-overlay" id="leadModal" aria-hidden="true">
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="leadTitle">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="leadTitle">
       <div class="modal-head">
         <div>
           <h3 id="leadTitle">Vamos conversar 🌿</h3>
@@ -226,120 +260,127 @@
         <button class="modal-close" type="button" data-close="leadModal" aria-label="Fechar">✕</button>
       </div>
 
-      <form id="leadForm" class="form-grid" novalidate>
-        <div class="two-col">
-          <div class="field">
-            <label>Nome completo <span class="req">*</span></label>
-            <input name="entry.407392332" placeholder="Nome completo" autocomplete="name" required />
-          </div>
+      <form class="form-grid" id="leadForm"
+        action="https://docs.google.com/forms/d/e/1FAIpQLSc343T86qOwMwLlOx4PgyKtW4hqPOBp6NPW2Hz8oXrdYvGw7g/formResponse"
+        method="POST" target="_self" novalidate>
 
-          <div class="field">
-            <label>Email <span class="req">*</span></label>
-            <input name="entry.526339929" type="email" placeholder="Email" autocomplete="email" required />
-          </div>
+        <div class="field">
+          <label>Nome completo <span class="req">*</span></label>
+          <input name="entry.407392332" autocomplete="name" placeholder="Nome completo" required />
+          <small class="error"></small>
         </div>
 
         <div class="field">
+          <label>Email <span class="req">*</span></label>
+          <input name="entry.526339929" type="email" autocomplete="email" placeholder="Email" required />
+          <small class="error"></small>
+        </div>
+
+        <div class="field full">
           <label>WhatsApp <span class="req">*</span></label>
-          <input id="leadPhone" name="entry.1559174376" placeholder="DD 12345-6789" inputmode="numeric" required />
+          <input name="entry.1559174376" inputmode="numeric" autocomplete="tel"
+            placeholder="DD 12345-6789" required data-phone />
+          <small class="error"></small>
         </div>
 
-        <div class="field">
+        <div class="field full">
           <label>O que você tem vivido que te fez buscar autoconhecimento? <span class="req">*</span></label>
           <textarea name="entry.804946524" placeholder="Conte um pouco..." required></textarea>
+          <small class="error"></small>
         </div>
 
-        <div class="field">
+        <div class="field full">
           <label>Como prefere o contato? <span class="req">*</span></label>
-          <div class="segmented" role="radiogroup" aria-label="Preferência de contato">
-            <label class="seg">
-              <input type="radio" name="entry.268953612" value="Email" required>
-              <span>Prefiro Email</span>
-            </label>
-            <label class="seg">
-              <input type="radio" name="entry.268953612" value="WhatsApp">
-              <span>Prefiro WhatsApp</span>
-            </label>
-            <label class="seg">
-              <input type="radio" name="entry.268953612" value="Telefone">
-              <span>Prefiro Telefone</span>
-            </label>
-          </div>
+          <select name="entry.268953612" required>
+            <option value="" selected disabled>Selecione uma opção</option>
+            <option value="Email">Email</option>
+            <option value="WhatsApp">WhatsApp</option>
+            <option value="Telefone">Telefone</option>
+          </select>
+          <small class="error"></small>
         </div>
 
-        <button type="submit" class="pill btn-primary modal-submit">Enviar</button>
+        <button class="pill btn-primary full" type="submit">Enviar</button>
+
+        <div class="form-note full">
+          Ao enviar, seus dados serão salvos no formulário.
+        </div>
+
+        <div class="form-success full" id="leadSuccess" hidden>
+          ✨ Obrigado! Em breve entraremos em contato.
+        </div>
       </form>
     </div>
   </div>
 
-  <!-- MODAL: "Garantir minha vaga" -->
-  <div class="modal-overlay" id="precheckoutModal" aria-hidden="true">
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="preTitle">
+  <!-- MODAL: "Garantir minha vaga" (pre-checkout) -->
+  <div class="modal-overlay" id="checkoutModal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle">
       <div class="modal-head">
         <div>
-          <h3 id="preTitle">Garantir minha vaga <span class="ok">✅</span></h3>
+          <h3 id="checkoutTitle">Garantir minha vaga ✅</h3>
           <p>Antes do pagamento, preencha seus dados para seguirmos com a sua inscrição.</p>
         </div>
-        <button class="modal-close" type="button" data-close="precheckoutModal" aria-label="Fechar">✕</button>
+        <button class="modal-close" type="button" data-close="checkoutModal" aria-label="Fechar">✕</button>
       </div>
 
-      <form id="precheckoutForm" class="form-grid" novalidate>
-        <div class="two-col">
-          <div class="field">
-            <label>Nome completo <span class="req">*</span></label>
-            <input name="entry.1408784355" placeholder="Nome completo" autocomplete="name" required />
-          </div>
+      <form class="form-grid" id="checkoutForm"
+        action="https://docs.google.com/forms/u/0/d/e/1FAIpQLSdHeWEx2NfbnrxQYTne4wl72QzJPVd2lNOa1LjOS2fCyShx1A/formResponse"
+        method="POST" target="_self" novalidate>
 
-          <div class="field">
-            <label>Email <span class="req">*</span></label>
-            <input name="entry.224218993" type="email" placeholder="Email" autocomplete="email" required />
-          </div>
-        </div>
-
-        <div class="two-col">
-          <div class="field">
-            <label>CPF <span class="muted">(opcional)</span></label>
-            <input name="entry.795371089" placeholder="CPF (opcional)" inputmode="numeric" />
-          </div>
-
-          <div class="field">
-            <label>WhatsApp <span class="req">*</span></label>
-            <input id="prePhone" name="entry.1927941383" placeholder="DD 12345-6789" inputmode="numeric" required />
-          </div>
+        <div class="field">
+          <label>Nome completo <span class="req">*</span></label>
+          <input name="entry.1408784355" autocomplete="name" placeholder="Nome completo" required />
+          <small class="error"></small>
         </div>
 
         <div class="field">
+          <label>Email <span class="req">*</span></label>
+          <input name="entry.224218993" type="email" autocomplete="email" placeholder="Email" required />
+          <small class="error"></small>
+        </div>
+
+        <div class="field">
+          <label>CPF (opcional)</label>
+          <input name="entry.795371089" inputmode="numeric" placeholder="CPF (opcional)" />
+          <small class="error"></small>
+        </div>
+
+        <div class="field">
+          <label>WhatsApp <span class="req">*</span></label>
+          <input name="entry.1927941383" inputmode="numeric" autocomplete="tel" placeholder="DD 12345-6789" required
+            data-phone />
+          <small class="error"></small>
+        </div>
+
+        <div class="field full">
           <label>O que te fez buscar essa terapia? O que você deseja transformar? <span class="req">*</span></label>
-          <textarea name="entry.2022455327"
-            placeholder="O que você deseja transformar? Conte com sinceridade." required></textarea>
+          <textarea name="entry.2022455327" placeholder="O que você deseja transformar? Conte com sinceridade."
+            required></textarea>
+          <small class="error"></small>
         </div>
 
-        <div class="field">
+        <div class="field full">
           <label>Como prefere o contato? <span class="req">*</span></label>
-          <div class="segmented" role="radiogroup" aria-label="Preferência de contato">
-            <label class="seg">
-              <input type="radio" name="entry.756664464" value="Email" required>
-              <span>Prefiro Email</span>
-            </label>
-            <label class="seg">
-              <input type="radio" name="entry.756664464" value="WhatsApp">
-              <span>Prefiro WhatsApp</span>
-            </label>
-            <label class="seg">
-              <input type="radio" name="entry.756664464" value="Telefone">
-              <span>Prefiro Telefone</span>
-            </label>
-          </div>
+          <select name="entry.756664464" required>
+            <option value="" selected disabled>Selecione uma opção</option>
+            <option value="Email">Email</option>
+            <option value="WhatsApp">WhatsApp</option>
+            <option value="Telefone">Telefone</option>
+          </select>
+          <small class="error"></small>
         </div>
 
-        <button type="submit" class="pill btn-primary modal-submit">Continuar para pagamento</button>
-        <div class="fineprint">Ao continuar, você será direcionado(a) para o checkout da Hotmart.</div>
+        <button class="pill btn-primary full" type="submit">Continuar para pagamento</button>
+
+        <div class="form-note full">
+          Ao continuar, você será direcionado(a) para o checkout da Hotmart.
+        </div>
       </form>
     </div>
   </div>
 
   <script src="./script.js"></script>
-  <script src="https://www.youtube.com/iframe_api"></script>
 </body>
 
 </html>
