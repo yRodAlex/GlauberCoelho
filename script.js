@@ -1,400 +1,329 @@
-/* =========================
-   CONFIGURAÇÕES
-   ========================= */
+/* =========================================================
+   Jornada Terapêutica — scripts (menu, modais, forms, vídeo)
+   ========================================================= */
 
-// ⚠️ Coloque aqui o link do checkout da Hotmart (o seu real).
-const HOTMART_CHECKOUT_URL = "https://pay.hotmart.com/SEU_LINK_AQUI";
+(function () {
+  const docEl = document.documentElement;
 
-/* YouTube video ID (troque se quiser) */
-const YT_VIDEO_ID = "dQw4w9WgXcQ"; // você pode trocar
+  // ---------------------------
+  // Helpers
+  // ---------------------------
+  const qs = (sel, root = document) => root.querySelector(sel);
+  const qsa = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
-/* Abrir lead form ao terminar vídeo (somente 1ª visita) */
-const OPEN_LEAD_ON_VIDEO_END_FIRST_VISIT = true;
-const LS_VIDEO_TRIGGER_KEY = "leadModalShownAfterVideo";
-
-/* =========================
-   HELPERS
-   ========================= */
-
-function qs(sel, el = document) { return el.querySelector(sel); }
-function qsa(sel, el = document) { return Array.from(el.querySelectorAll(sel)); }
-
-function openModal(id) {
-  const m = document.getElementById(id);
-  if (!m) return;
-  m.classList.add("is-open");
-  m.setAttribute("aria-hidden", "false");
-  document.body.style.overflow = "hidden";
-}
-
-function closeModal(id) {
-  const m = document.getElementById(id);
-  if (!m) return;
-  m.classList.remove("is-open");
-  m.setAttribute("aria-hidden", "true");
-  document.body.style.overflow = "";
-}
-
-function isValidEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(email || "").trim());
-}
-
-function formatPhoneBR(value) {
-  const digits = (value || "").replace(/\D/g, "").slice(0, 11);
-  const ddd = digits.slice(0, 2);
-  const mid = digits.slice(2, 7);
-  const tail = digits.slice(7, 11);
-  let out = "";
-
-  if (ddd.length) out += ddd;
-  if (digits.length > 2) out += " " + mid;
-  if (digits.length > 7) out += "-" + tail;
-
-  return out.trim();
-}
-
-function setFieldError(fieldEl, msg) {
-  const input = fieldEl.querySelector("input, textarea, select");
-  const small = fieldEl.querySelector(".error");
-  if (input) input.classList.add("is-invalid");
-  if (small) small.textContent = msg || "Campo obrigatório";
-}
-
-function clearFieldError(fieldEl) {
-  const input = fieldEl.querySelector("input, textarea, select");
-  const small = fieldEl.querySelector(".error");
-  if (input) input.classList.remove("is-invalid");
-  if (small) small.textContent = "";
-}
-
-function validateForm(form) {
-  let ok = true;
-  const fields = qsa(".field", form);
-
-  fields.forEach(f => {
-    clearFieldError(f);
-
-    const el = f.querySelector("input, textarea, select");
-    if (!el) return;
-
-    const required = el.hasAttribute("required");
-    const val = (el.value || "").trim();
-
-    if (required && !val) {
-      ok = false;
-      setFieldError(f, "Campo obrigatório");
-      return;
-    }
-
-    if (el.type === "email" && val) {
-      if (!isValidEmail(val)) {
-        ok = false;
-        setFieldError(f, "Digite um email válido");
-        return;
-      }
-    }
-
-    if (el.dataset.phone !== undefined && val) {
-      const digits = val.replace(/\D/g, "");
-      if (digits.length < 10) {
-        ok = false;
-        setFieldError(f, "Use o formato: DD 12345-6789");
-        return;
-      }
-      if (digits.length !== 11 && digits.length !== 10) {
-        ok = false;
-        setFieldError(f, "Use o formato: DD 12345-6789");
-        return;
-      }
-    }
-
-    if (el.tagName === "SELECT" && required) {
-      if (!val) {
-        ok = false;
-        setFieldError(f, "Selecione uma opção");
-        return;
-      }
-    }
-  });
-
-  if (!ok) {
-    const firstInvalid = form.querySelector(".is-invalid");
-    if (firstInvalid) firstInvalid.focus({ preventScroll: false });
+  function lockScroll(lock) {
+    document.body.style.overflow = lock ? "hidden" : "";
   }
 
-  return ok;
-}
-
-async function submitToGoogleForms(form) {
-  const action = form.getAttribute("action");
-  const fd = new FormData(form);
-
-  await fetch(action, {
-    method: "POST",
-    mode: "no-cors",
-    body: fd
-  });
-}
-
-/* =========================
-   MENU HAMBURGER
-   ========================= */
-(function initMobileMenu() {
-  const menu = document.getElementById("mobileMenu");
-  const btn = document.getElementById("hamburgerBtn");
-  const closeBtn = document.getElementById("closeMobileMenu");
-
-  if (!menu || !btn || !closeBtn) return;
-
-  function open() {
-    menu.classList.add("is-open");
-    menu.setAttribute("aria-hidden", "false");
-    btn.setAttribute("aria-expanded", "true");
-    document.body.style.overflow = "hidden";
-  }
-  function close() {
-    menu.classList.remove("is-open");
-    menu.setAttribute("aria-hidden", "true");
-    btn.setAttribute("aria-expanded", "false");
-    document.body.style.overflow = "";
+  function openBackdrop(backdropEl) {
+    if (!backdropEl) return;
+    backdropEl.classList.add("is-open");
+    backdropEl.setAttribute("aria-hidden", "false");
+    lockScroll(true);
   }
 
-  btn.addEventListener("click", open);
-  closeBtn.addEventListener("click", close);
+  function closeBackdrop(backdropEl) {
+    if (!backdropEl) return;
+    backdropEl.classList.remove("is-open");
+    backdropEl.setAttribute("aria-hidden", "true");
+    lockScroll(false);
+  }
 
-  menu.addEventListener("click", (e) => {
-    if (e.target === menu) close();
-  });
+  function isEmailValid(email) {
+    // Usa validação simples + nativa do browser (type="email")
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email || "").trim());
+  }
 
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && menu.classList.contains("is-open")) close();
-  });
+  function formatPhoneMask(value) {
+    const digits = String(value || "").replace(/\D/g, "").slice(0, 11); // 2 + 9
+    if (digits.length <= 2) return digits;
+    if (digits.length <= 7) return `${digits.slice(0, 2)} ${digits.slice(2)}`;
+    return `${digits.slice(0, 2)} ${digits.slice(2, 7)}-${digits.slice(7)}`;
+  }
 
-  qsa(".mobileLink", menu).forEach(a => {
-    a.addEventListener("click", () => close());
-  });
-})();
-
-/* =========================
-   MODAIS
-   ========================= */
-(function initModals() {
-  const openLeadBtn = document.getElementById("openLeadBtn");
-  const openLeadBtn2 = document.getElementById("openLeadBtn2");
-  const openCheckoutBtn = document.getElementById("openCheckoutBtn");
-  const openCheckoutBtnMobile = document.getElementById("openCheckoutBtnMobile");
-  const floatingCart = document.getElementById("floatingCart");
-
-  openLeadBtn?.addEventListener("click", () => openModal("leadModal"));
-  openLeadBtn2?.addEventListener("click", () => openModal("leadModal"));
-
-  openCheckoutBtn?.addEventListener("click", () => openModal("checkoutModal"));
-  openCheckoutBtnMobile?.addEventListener("click", () => {
-    const mobileMenu = document.getElementById("mobileMenu");
-    mobileMenu?.classList.remove("is-open");
-    mobileMenu?.setAttribute("aria-hidden", "true");
-    openModal("checkoutModal");
-  });
-
-  floatingCart?.addEventListener("click", () => openModal("checkoutModal"));
-
-  qsa("[data-close]").forEach(btn => {
-    btn.addEventListener("click", () => closeModal(btn.getAttribute("data-close")));
-  });
-
-  ["leadModal", "checkoutModal"].forEach(id => {
-    const m = document.getElementById(id);
-    if (!m) return;
-    m.addEventListener("click", (e) => {
-      if (e.target === m) closeModal(id);
+  function attachPhoneMask(input) {
+    if (!input) return;
+    input.addEventListener("input", () => {
+      const cursorAtEnd = input.selectionStart === input.value.length;
+      input.value = formatPhoneMask(input.value);
+      // Mantém cursor no final (evita pular no iOS)
+      if (cursorAtEnd) {
+        try { input.setSelectionRange(input.value.length, input.value.length); } catch (_) {}
+      }
     });
-  });
-
-  document.addEventListener("keydown", (e) => {
-    if (e.key !== "Escape") return;
-    const leadOpen = document.getElementById("leadModal")?.classList.contains("is-open");
-    const checkoutOpen = document.getElementById("checkoutModal")?.classList.contains("is-open");
-    if (leadOpen) closeModal("leadModal");
-    if (checkoutOpen) closeModal("checkoutModal");
-  });
-})();
-
-/* =========================
-   PHONE MASK
-   ========================= */
-(function initPhoneMask() {
-  qsa("input[data-phone]").forEach(inp => {
-    inp.addEventListener("input", () => {
-      const caret = inp.selectionStart || 0;
-      const before = inp.value;
-      inp.value = formatPhoneBR(inp.value);
-
-      const after = inp.value;
-      const diff = after.length - before.length;
-      const next = Math.max(0, caret + diff);
-      inp.setSelectionRange(next, next);
-    });
-  });
-})();
-
-/* =========================
-   SUBMIT FORMS
-   ========================= */
-(function initForms() {
-  const leadForm = document.getElementById("leadForm");
-  const checkoutForm = document.getElementById("checkoutForm");
-  const leadSuccess = document.getElementById("leadSuccess");
-
-  function wireLiveValidation(form) {
-    qsa("input, textarea, select", form).forEach(el => {
-      el.addEventListener("input", () => {
-        const field = el.closest(".field");
-        if (field) clearFieldError(field);
-      });
-      el.addEventListener("change", () => {
-        const field = el.closest(".field");
-        if (field) clearFieldError(field);
-      });
-      el.addEventListener("blur", () => {
-        const field = el.closest(".field");
-        if (!field) return;
-
-        if (el.type === "email" && el.value.trim() && !isValidEmail(el.value)) {
-          setFieldError(field, "Digite um email válido");
-        }
-
-        if (el.dataset.phone !== undefined && el.value.trim()) {
-          const digits = el.value.replace(/\D/g, "");
-          if (digits.length !== 10 && digits.length !== 11) {
-            setFieldError(field, "Use o formato: DD 12345-6789");
-          }
-        }
-      });
+    // força formato ao sair
+    input.addEventListener("blur", () => {
+      input.value = formatPhoneMask(input.value);
     });
   }
 
-  if (leadForm) wireLiveValidation(leadForm);
-  if (checkoutForm) wireLiveValidation(checkoutForm);
+  // ---------------------------
+  // Navegação (highlight)
+  // ---------------------------
+  (function navHighlight() {
+    const links = qsa('#navlinks a[data-target]');
+    const sections = links.map(a => document.getElementById(a.dataset.target)).filter(Boolean);
+    if (!('IntersectionObserver' in window) || sections.length === 0) return;
 
-  leadForm?.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    if (!validateForm(leadForm)) return;
+    const setActive = (id) => links.forEach(a => a.classList.toggle('active', a.dataset.target === id));
 
-    try {
-      await submitToGoogleForms(leadForm);
+    const headerH = parseInt(getComputedStyle(docEl).getPropertyValue('--headerH')) || 76;
 
-      if (leadSuccess) leadSuccess.hidden = false;
+    const obs = new IntersectionObserver((entries) => {
+      const visible = entries
+        .filter(e => e.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
 
-      leadForm.reset();
+      if (visible && visible.target && visible.target.id) setActive(visible.target.id);
+    }, {
+      root: null,
+      rootMargin: `-${headerH + 10}px 0px -60% 0px`,
+      threshold: [0.15, 0.25, 0.4, 0.6, 0.8]
+    });
+
+    sections.forEach(sec => obs.observe(sec));
+    setActive(sections[0].id);
+  })();
+
+  // ---------------------------
+  // Mobile menu (hamburger)
+  // ---------------------------
+  (function mobileMenu() {
+    const btn = qs("#mobileMenuBtn");
+    const panel = qs("#mobileMenu");
+    const backdrop = qs("#mobileMenuBackdrop");
+
+    if (!btn || !panel || !backdrop) return;
+
+    function openMenu() {
+      backdrop.classList.add("is-open");
+      btn.setAttribute("aria-expanded", "true");
+      lockScroll(true);
+    }
+
+    function closeMenu() {
+      backdrop.classList.remove("is-open");
+      btn.setAttribute("aria-expanded", "false");
+      lockScroll(false);
+    }
+
+    btn.addEventListener("click", () => {
+      const isOpen = backdrop.classList.contains("is-open");
+      if (isOpen) closeMenu(); else openMenu();
+    });
+
+    backdrop.addEventListener("click", (e) => {
+      if (e.target === backdrop) closeMenu();
+    });
+
+    qsa('a[data-target]', panel).forEach(a => {
+      a.addEventListener("click", () => closeMenu());
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && backdrop.classList.contains("is-open")) closeMenu();
+    });
+  })();
+
+  // ---------------------------
+  // Lead modal (Quero entender)
+  // ---------------------------
+  const leadModal = qs("#leadModal");
+  const closeLeadBtn = qs("#closeLeadModal");
+
+  function openLeadModal() { openBackdrop(leadModal); }
+  function closeLeadModal() { closeBackdrop(leadModal); }
+
+  if (closeLeadBtn) closeLeadBtn.addEventListener("click", closeLeadModal);
+  if (leadModal) {
+    leadModal.addEventListener("click", (e) => { if (e.target === leadModal) closeLeadModal(); });
+  }
+
+  // Expor para botões inline
+  window.openLeadModal = openLeadModal;
+
+  // Lead form submit
+  (function leadFormHandler() {
+    const form = qs("#leadForm");
+    const success = qs("#leadSuccess");
+    const submitBtn = qs("#leadSubmit");
+
+    if (!form) return;
+
+    attachPhoneMask(qs("#leadWhatsapp", form));
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      // Validações nativas
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      const email = qs("#leadEmail", form)?.value || "";
+      if (!isEmailValid(email)) {
+        qs("#leadEmail", form)?.setCustomValidity("Digite um e-mail válido.");
+        form.reportValidity();
+        qs("#leadEmail", form)?.setCustomValidity("");
+        return;
+      }
+
+      const fd = new FormData(form);
+
+      // Feedback simples no botão
+      const originalText = submitBtn ? submitBtn.textContent : "";
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Enviando…";
+      }
+
+      try {
+        // no-cors para Google Forms
+        await fetch(form.action, { method: "POST", mode: "no-cors", body: fd });
+      } catch (_) {
+        // Mesmo se falhar (bloqueio), seguimos o fluxo para não travar o usuário
+      }
+
+      if (success) success.style.display = "block";
+      form.style.display = "none";
+
       setTimeout(() => {
-        if (leadSuccess) leadSuccess.hidden = true;
-        closeModal("leadModal");
-      }, 1400);
-    } catch (err) {
-      closeModal("leadModal");
-    }
-  });
+        closeLeadModal();
+        // reset
+        form.reset();
+        form.style.display = "";
+        if (success) success.style.display = "none";
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalText;
+        }
+      }, 1200);
+    });
+  })();
 
-  checkoutForm?.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    if (!validateForm(checkoutForm)) return;
+  // ---------------------------
+  // Checkout modal (Garantir vaga)
+  // ---------------------------
+  const checkoutModal = qs("#checkoutModal");
+  const closeCheckoutBtn = qs("#closeCheckoutModal");
+  const HOTMART_CHECKOUT_URL = window.HOTMART_CHECKOUT_URL || ""; // definido no HTML por você, se quiser
 
-    try {
-      await submitToGoogleForms(checkoutForm);
-    } catch (err) {
-    } finally {
-      closeModal("checkoutModal");
-      window.location.href = HOTMART_CHECKOUT_URL;
-    }
-  });
-})();
+  function openCheckoutModal() { openBackdrop(checkoutModal); }
+  function closeCheckoutModal() { closeBackdrop(checkoutModal); }
 
-/* =========================
-   ACTIVE MENU (desktop)
-   ========================= */
-(function navHighlight() {
-  const links = Array.from(document.querySelectorAll('#navlinks a[data-target]'));
-  const sections = links.map(a => document.getElementById(a.dataset.target)).filter(Boolean);
-  if (!('IntersectionObserver' in window) || sections.length === 0) return;
+  window.openCheckoutModal = openCheckoutModal;
 
-  const setActive = (id) => {
-    links.forEach(a => a.classList.toggle('active', a.dataset.target === id));
-  };
-
-  const headerH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--headerH')) || 76;
-
-  const obs = new IntersectionObserver((entries) => {
-    const visible = entries
-      .filter(e => e.isIntersecting)
-      .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-
-    if (visible?.target?.id) setActive(visible.target.id);
-  }, {
-    root: null,
-    rootMargin: `-${Math.round(headerH + 10)}px 0px -60% 0px`,
-    threshold: [0.15, 0.25, 0.4, 0.6, 0.8]
-  });
-
-  sections.forEach(sec => obs.observe(sec));
-  setActive(sections[0].id);
-})();
-
-/* =========================
-   YOUTUBE: abrir lead modal ao terminar (1ª visita)
-   ========================= */
-(function initYouTubeEndTrigger() {
-  if (!OPEN_LEAD_ON_VIDEO_END_FIRST_VISIT) {
-    const holder = document.getElementById("ytPlayer");
-    if (holder) {
-      holder.innerHTML = `<iframe src="https://www.youtube.com/embed/${YT_VIDEO_ID}"
-        title="Vídeo de apresentação" loading="lazy"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowfullscreen></iframe>`;
-    }
-    return;
+  if (closeCheckoutBtn) closeCheckoutBtn.addEventListener("click", closeCheckoutModal);
+  if (checkoutModal) {
+    checkoutModal.addEventListener("click", (e) => { if (e.target === checkoutModal) closeCheckoutModal(); });
   }
 
-  const already = localStorage.getItem(LS_VIDEO_TRIGGER_KEY) === "1";
+  (function checkoutFormHandler() {
+    const form = qs("#preCheckoutForm");
+    const submitBtn = qs("#preCheckoutSubmit");
+    if (!form) return;
 
-  const tag = document.createElement("script");
-  tag.src = "https://www.youtube.com/iframe_api";
-  document.head.appendChild(tag);
+    attachPhoneMask(qs('[data-phone-mask]', form));
 
-  window.onYouTubeIframeAPIReady = function () {
-    // eslint-disable-next-line no-undef
-    new YT.Player("ytPlayer", {
-      videoId: YT_VIDEO_ID,
-      playerVars: {
-        rel: 0,
-        modestbranding: 1
-      },
-      events: {
-        onStateChange: (event) => {
-          // eslint-disable-next-line no-undef
-          if (event.data === YT.PlayerState.ENDED) {
-            if (!already) {
-              localStorage.setItem(LS_VIDEO_TRIGGER_KEY, "1");
-              openModal("leadModal");
+    // ACTION do Google Forms (novo formulário de "Garantir vaga")
+    const PRECHECKOUT_FORM_ACTION =
+      "https://docs.google.com/forms/d/e/1FAIpQLSdHeWEx2NfbnrxQYTne4wl72QzJPVd2lNOa1LjOS2fCyShx1A/formResponse";
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      const email = qs("#pc_email", form)?.value || "";
+      if (!isEmailValid(email)) {
+        qs("#pc_email", form)?.setCustomValidity("Digite um e-mail válido.");
+        form.reportValidity();
+        qs("#pc_email", form)?.setCustomValidity("");
+        return;
+      }
+
+      const fd = new FormData(form);
+
+      const originalText = submitBtn ? submitBtn.textContent : "";
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Redirecionando…";
+      }
+
+      try {
+        await fetch(PRECHECKOUT_FORM_ACTION, { method: "POST", mode: "no-cors", body: fd });
+      } catch (_) {
+        // não bloqueia o fluxo
+      }
+
+      // ✅ Sem “telinha” de sucesso: vai direto para o checkout
+      if (HOTMART_CHECKOUT_URL) {
+        window.location.href = HOTMART_CHECKOUT_URL;
+      } else {
+        // fallback: fecha modal se ainda não configurou a url
+        closeCheckoutModal();
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalText;
+        }
+      }
+    });
+  })();
+
+  // ---------------------------
+  // Abrir lead modal ao terminar vídeo (apenas 1ª visita)
+  // ---------------------------
+  (function videoAutoOpenOnce() {
+    const KEY = "leadModalAfterVideoShown_v1";
+    if (localStorage.getItem(KEY) === "1") return;
+
+    const iframe = qs('iframe[data-youtube-lead="1"]') || qs('.video iframe');
+    if (!iframe) return;
+
+    // Precisamos do YouTube Iframe API para detectar término.
+    // Só ativamos se for um link do youtube embed.
+    const src = iframe.getAttribute("src") || "";
+    if (!/youtube\.com\/embed\//i.test(src)) return;
+
+    // Garante enablejsapi=1
+    if (!/enablejsapi=1/.test(src)) {
+      const joiner = src.includes("?") ? "&" : "?";
+      iframe.setAttribute("src", src + joiner + "enablejsapi=1");
+    }
+
+    // Carrega API
+    const tag = document.createElement("script");
+    tag.src = "https://www.youtube.com/iframe_api";
+    document.head.appendChild(tag);
+
+    window.onYouTubeIframeAPIReady = function () {
+      try {
+        // eslint-disable-next-line no-undef
+        new YT.Player(iframe, {
+          events: {
+            onStateChange: (event) => {
+              // 0 = ended
+              if (event.data === 0) {
+                localStorage.setItem(KEY, "1");
+                openLeadModal();
+              }
             }
           }
-        }
-      }
-    });
-  };
+        });
+      } catch (_) {}
+    };
+  })();
+
+  // ---------------------------
+  // ESC fecha modais
+  // ---------------------------
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    if (checkoutModal && checkoutModal.classList.contains("is-open")) closeCheckoutModal();
+    if (leadModal && leadModal.classList.contains("is-open")) closeLeadModal();
+  });
 })();
-
-
-function ajustarScrollModal() {
-  const header = document.querySelector('.modal-header');
-  const body = document.querySelector('.modal-body');
-
-  if (header && body) {
-    body.style.paddingTop = header.offsetHeight + 12 + 'px';
-  }
-}
-
-
-openModalBtn.addEventListener('click', () => {
-  modal.classList.add('open');
-  ajustarScrollModal();
-});
