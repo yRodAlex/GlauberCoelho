@@ -1,19 +1,13 @@
 <!doctype html>
 <html lang="pt-BR">
-
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Jornada Terapêutica | Autoconhecimento e Vínculos</title>
-  <meta name="description"
-    content="Um caminho estruturado para compreender, ressignificar e reorganizar sua forma de se relacionar." />
+  <title>Jornada Terapêutica</title>
 
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="./styles.css" />
 </head>
@@ -22,7 +16,7 @@
   <!-- HEADER -->
   <header class="site-header">
     <div class="container nav">
-      <!-- Hamburger (mobile only via CSS) -->
+      <!-- Hamburger (mobile only) -->
       <button class="hamburger" id="hamburgerBtn" type="button" aria-label="Abrir menu" aria-expanded="false">
         ☰
       </button>
@@ -45,7 +39,7 @@
 
     <!-- Mobile drawer -->
     <div class="mobile-drawer" id="mobileDrawer" aria-hidden="true">
-      <div class="mobile-drawer-card">
+      <div class="mobile-drawer-card" role="dialog" aria-modal="true" aria-label="Menu">
         <div class="mobile-drawer-head">
           <div class="mobile-drawer-title">Menu</div>
           <button class="mobile-drawer-close" id="closeDrawerBtn" type="button" aria-label="Fechar menu">✕</button>
@@ -72,8 +66,8 @@
 
             <div class="hero-cta">
               <a class="pill btn-white"
-                href="https://wa.me/5512981402217?text=Quero%20come%C3%A7ar%20a%20minha%20jornada" target="_blank"
-                rel="noopener">Quero iniciar minha jornada</a>
+                 href="https://wa.me/5512981402217?text=Quero%20come%C3%A7ar%20a%20minha%20jornada"
+                 target="_blank" rel="noopener">Quero iniciar minha jornada</a>
 
               <button class="pill btn-secondary" id="openLeadBtn" type="button">
                 Quero entender se é para mim
@@ -84,8 +78,8 @@
           <div class="hero-media">
             <div class="frame">
               <img alt="Jornada terapêutica"
-                src="https://cdn.ailandingpage.ai/ai-landingpage/user-generate/bce083e0-057e-4db9-9a0a-625b6fbd40e7/bce083e0-057e-4db9-9a0a-625b6fbd40e7/hero/hero-main-68a306f5e44e4a4095a349a2e23168ee.png"
-                loading="lazy" />
+                   src="https://cdn.ailandingpage.ai/ai-landingpage/user-generate/bce083e0-057e-4db9-9a0a-625b6fbd40e7/bce083e0-057e-4db9-9a0a-625b6fbd40e7/hero/hero-main-68a306f5e44e4a4095a349a2e23168ee.png"
+                   loading="lazy" />
             </div>
           </div>
         </div>
@@ -103,97 +97,12 @@
       </div>
     </section>
 
-    <!-- VIDEO -->
-    <section id="video" class="section section-compact-top"
-      style="background: linear-gradient(180deg, var(--ice), rgba(219,211,198,.20));">
-      <div class="container center">
-        <h2>Vídeo</h2>
-        <p class="sub">Assista e entenda como funciona o processo e para quem ele faz sentido.</p>
-
-        <div class="video-grid">
-          <div class="video" aria-label="Vídeo de apresentação">
-            <!-- Troque o VIDEO_ID se quiser -->
-            <div id="ytPlayer" data-youtube-id="dQw4w9WgXcQ"></div>
-          </div>
-
-          <div class="cta-pair">
-            <button class="pill btn-primary" id="openCheckoutBtn2" type="button">
-              Garantir minha vaga
-            </button>
-
-            <button class="pill btn-secondary" id="openLeadBtn2" type="button">
-              Quero entender se é para mim
-            </button>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <!-- PARA QUEM -->
     <section id="para-quem" class="section">
       <div class="container">
         <div class="center">
           <h2>Para quem essa jornada faz sentido</h2>
           <p class="sub">Se você se reconhece em um ou mais pontos abaixo, esse processo pode ser o próximo passo.</p>
-        </div>
-
-        <div class="grid-2">
-          <div class="tile"><strong>Repetição de padrões</strong>
-            <p>Sentem que repetem os mesmos padrões nos relacionamentos.</p>
-          </div>
-          <div class="tile"><strong>Ansiedade nos vínculos</strong>
-            <p>Vivem ansiedade, insegurança ou afastamento emocional nos vínculos.</p>
-          </div>
-          <div class="tile"><strong>Muito conteúdo, pouca mudança</strong>
-            <p>Já consumiram muito conteúdo, mas ainda sofrem na prática.</p>
-          </div>
-          <div class="tile"><strong>Profundidade, não só insight</strong>
-            <p>Querem autoconhecimento com profundidade, não apenas insight.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- PASSO A PASSO -->
-    <section class="section" style="background: linear-gradient(180deg, rgba(219,211,198,.18), var(--ice));">
-      <div class="container center">
-        <h2>A Jornada Terapêutica — Passo a Passo</h2>
-        <p class="sub">Um caminho estruturado para reconhecer, compreender e reorganizar o seu modo de se vincular.</p>
-
-        <div class="steps">
-          <div class="step">
-            <img alt="Identificação de padrões emocionais" src="https://placehold.co/900x500?text=Passo+1"
-              loading="lazy">
-            <h3>1) Identificação de padrões emocionais</h3>
-            <p>Você começa reconhecendo comportamentos, reações e repetições que surgem nos seus vínculos — especialmente
-              sob estresse emocional.</p>
-          </div>
-
-          <div class="step">
-            <img alt="Compreensão dos primeiros vínculos" src="https://placehold.co/900x500?text=Passo+2" loading="lazy">
-            <h3>2) Compreensão dos primeiros vínculos</h3>
-            <p>Exploramos como experiências iniciais de cuidado, ausência, previsibilidade ou instabilidade influenciaram
-              sua forma de amar, pedir, se proteger ou se afastar.</p>
-          </div>
-
-          <div class="step">
-            <img alt="Identificação do tipo de apego" src="https://placehold.co/900x500?text=Passo+3" loading="lazy">
-            <h3>3) Identificação do tipo de apego</h3>
-            <p>Com base na sua história e nos vínculos atuais, identificamos o padrão predominante de apego (ansioso,
-              evitativo, desorganizado ou seguro em construção).</p>
-          </div>
-
-          <div class="step">
-            <img alt="Ressignificação e reorganização emocional" src="https://placehold.co/900x500?text=Passo+4"
-              loading="lazy">
-            <h3>4) Ressignificação e reorganização emocional</h3>
-            <p>Trabalhamos ressignificações personalizadas, utilizando técnicas terapêuticas adequadas à sua demanda
-              específica — não existe fórmula única.</p>
-          </div>
-        </div>
-
-        <div class="highlight">
-          O objetivo não é eliminar emoções, mas mudar a forma como você se relaciona com elas.
         </div>
       </div>
     </section>
@@ -203,77 +112,14 @@
       <div class="container center">
         <h2>Como funciona na prática</h2>
         <p class="sub">Processo estruturado, mas flexível. Acompanhamento contínuo e espaço seguro.</p>
-
-        <div class="checklist">
-          <div class="check"><span class="dot"></span>
-            <div><strong>Sessões terapêuticas semanais</strong>
-              <div class="muted">Ritmo consistente para aprofundar o processo.</div>
-            </div>
-          </div>
-          <div class="check"><span class="dot"></span>
-            <div><strong>Acompanhamento contínuo</strong>
-              <div class="muted">Não é pontual: é jornada com presença e direção.</div>
-            </div>
-          </div>
-          <div class="check"><span class="dot"></span>
-            <div><strong>Estruturado, porém flexível</strong>
-              <div class="muted">Você não entra em uma “fórmula”: entra em um caminho.</div>
-            </div>
-          </div>
-          <div class="check"><span class="dot"></span>
-            <div><strong>Ético e confidencial</strong>
-              <div class="muted">Espaço seguro, respeitoso e responsável.</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="freq">Frequência: 1 sessão por semana</div>
       </div>
     </section>
 
     <!-- FACILITADOR -->
     <section id="facilitador" class="section">
       <div class="container center">
-        <h2>Um convite honesto</h2>
-        <p class="sub">
-          Se você sente que já entendeu muita coisa, mas ainda se machuca; não quer mais repetir os mesmos ciclos; e está
-          disposto(a) a olhar para si com responsabilidade emocional… esse processo é o próximo passo.
-        </p>
-
-        <div class="bio">
-          <div class="box">
-            <h3 style="margin:0 0 10px; color: var(--deep); font-size: 20px;">Conheça o Glauber</h3>
-            <p class="muted" style="margin:0;">
-              Minha abordagem une fundamentos da psicologia, teoria do apego e práticas de consciência emocional,
-              sempre com acolhimento, ética e profundidade.
-              <br><br>
-              Acredito que repetir padrões não é falta de força, mas resultado de histórias que ainda pedem compreensão e
-              reorganização.
-              <br><br>
-              Minha missão é conduzir pessoas que se sentem presas em ciclos afetivos para um lugar de mais segurança
-              interna, clareza e presença — começando por si.
-              <br><br>
-              Essa jornada não é sobre “consertar” você. É sobre ajudar você a se reconectar com quem sempre esteve aí.
-            </p>
-          </div>
-          <div class="photo" aria-label="Foto do facilitador">
-            <img class="photo-img" src="./glauber.jpg" alt="Glauber" loading="lazy">
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- CTA FINAL -->
-    <section id="cta-final" class="section final">
-      <div class="container">
-        <div class="cta-card">
-          <h3>Você merece viver um relacionamento saudável e excepcional.</h3>
-          <p>Autoconhecimento não é sobre saber mais. É sobre se relacionar melhor consigo e com o outro.</p>
-
-          <button class="pill btn-primary" id="openCheckoutBtn3" type="button">
-            QUERO GARANTIR MINHA VAGA
-          </button>
-        </div>
+        <h2>Facilitador</h2>
+        <p class="sub">Conheça o Glauber.</p>
       </div>
     </section>
 
@@ -311,8 +157,7 @@
 
           <div class="field">
             <label>WhatsApp <span class="req">*</span></label>
-            <input class="phone-mask" name="entry.1559174376" inputmode="numeric" placeholder="DD 12345-6789"
-              required>
+            <input class="phone-mask" name="entry.1559174376" inputmode="numeric" placeholder="DD 12345-6789" required>
             <div class="hint">Formato: DD 12345-6789</div>
           </div>
 
@@ -332,10 +177,6 @@
           </div>
 
           <button class="pill btn-primary form-submit" type="submit">Enviar</button>
-
-          <div class="form-footnote">
-            Ao enviar, salvaremos sua resposta no Google Forms.
-          </div>
         </form>
 
         <iframe name="hidden_iframe_lead" id="hidden_iframe_lead" style="display:none"></iframe>
@@ -365,6 +206,7 @@
         <form class="pretty-form" id="checkoutForm"
           action="https://docs.google.com/forms/u/0/d/e/1FAIpQLSdHeWEx2NfbnrxQYTne4wl72QzJPVd2lNOa1LjOS2fCyShx1A/formResponse"
           method="POST" target="hidden_iframe_checkout">
+
           <div class="grid-2-form">
             <div class="field">
               <label>Nome completo <span class="req">*</span></label>
@@ -383,16 +225,14 @@
             </div>
             <div class="field">
               <label>WhatsApp / Celular <span class="req">*</span></label>
-              <input class="phone-mask" name="entry.1927941383" inputmode="numeric" placeholder="DD 12345-6789"
-                required>
+              <input class="phone-mask" name="entry.1927941383" inputmode="numeric" placeholder="DD 12345-6789" required>
               <div class="hint">Formato: DD 12345-6789</div>
             </div>
           </div>
 
           <div class="field">
             <label>O que te fez buscar a terapia? O que você deseja transformar? <span class="req">*</span></label>
-            <textarea name="entry.2022455327" placeholder="O que você deseja transformar? Conte com sinceridade."
-              required></textarea>
+            <textarea name="entry.2022455327" placeholder="O que você deseja transformar? Conte com sinceridade." required></textarea>
           </div>
 
           <div class="field">
@@ -420,9 +260,5 @@
   </div>
 
   <script src="./script.js"></script>
-
-  <!-- YouTube Iframe API -->
-  <script src="https://www.youtube.com/iframe_api"></script>
 </body>
-
 </html>
