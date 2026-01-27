@@ -382,3 +382,19 @@ async function submitToGoogleForms(form) {
     });
   };
 })();
+
+
+function ajustarScrollModal() {
+  const header = document.querySelector('.modal-header');
+  const body = document.querySelector('.modal-body');
+
+  if (header && body) {
+    body.style.paddingTop = header.offsetHeight + 12 + 'px';
+  }
+}
+
+
+openModalBtn.addEventListener('click', () => {
+  modal.classList.add('open');
+  ajustarScrollModal();
+});

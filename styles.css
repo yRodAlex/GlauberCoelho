@@ -727,3 +727,21 @@ select {
 @media (max-width: 420px) {
   .floating-cart { right: 14px; bottom: 14px; }
 }
+
+
+.modal-content {
+  overflow-y: auto;
+  padding-top: 16px; /* fallback */
+}
+
+/* Header fixo do modal */
+.modal-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+/* Compensa a altura real do header */
+.modal-body {
+  padding-top: 24px;
+}
