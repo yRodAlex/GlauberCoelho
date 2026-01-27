@@ -3,7 +3,6 @@
    ========================= */
 
 // ⚠️ Coloque aqui o link do checkout da Hotmart (o seu real).
-// Exemplo (troque pelo seu):
 const HOTMART_CHECKOUT_URL = "https://pay.hotmart.com/SEU_LINK_AQUI";
 
 /* YouTube video ID (troque se quiser) */
@@ -37,20 +36,14 @@ function closeModal(id) {
 }
 
 function isValidEmail(email) {
-  // simples e confiável para validação front
   return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(email || "").trim());
 }
 
-/**
- * Máscara: "DD 12345-6789"
- * - Aceita só números.
- * - Primeiro 2 dígitos (DDD), depois 4 ou 5, depois 4.
- */
 function formatPhoneBR(value) {
-  const digits = (value || "").replace(/\D/g, "").slice(0, 11); // 2 + 9 = 11 máx
+  const digits = (value || "").replace(/\D/g, "").slice(0, 11);
   const ddd = digits.slice(0, 2);
-  const mid = digits.slice(2, 7); // até 5
-  const tail = digits.slice(7, 11); // 4
+  const mid = digits.slice(2, 7);
+  const tail = digits.slice(7, 11);
   let out = "";
 
   if (ddd.length) out += ddd;
@@ -74,7 +67,6 @@ function clearFieldError(fieldEl) {
   if (small) small.textContent = "";
 }
 
-/* Valida um form seguindo regras pedidas */
 function validateForm(form) {
   let ok = true;
   const fields = qsa(".field", form);
@@ -86,7 +78,6 @@ function validateForm(form) {
     if (!el) return;
 
     const required = el.hasAttribute("required");
-    const name = el.getAttribute("name") || "";
     const val = (el.value || "").trim();
 
     if (required && !val) {
@@ -95,7 +86,6 @@ function validateForm(form) {
       return;
     }
 
-    // email
     if (el.type === "email" && val) {
       if (!isValidEmail(val)) {
         ok = false;
@@ -104,10 +94,9 @@ function validateForm(form) {
       }
     }
 
-    // phone mask completeness: precisa ter no mínimo "DD 12345-6789" (2 + 9 = 11 dígitos)
     if (el.dataset.phone !== undefined && val) {
       const digits = val.replace(/\D/g, "");
-      if (digits.length < 10) { // mínimo 10 (DDD+8) — mas vamos exigir 11 se quiser estrito
+      if (digits.length < 10) {
         ok = false;
         setFieldError(f, "Use o formato: DD 12345-6789");
         return;
@@ -119,7 +108,6 @@ function validateForm(form) {
       }
     }
 
-    // selects
     if (el.tagName === "SELECT" && required) {
       if (!val) {
         ok = false;
@@ -129,7 +117,6 @@ function validateForm(form) {
     }
   });
 
-  // foco no primeiro erro
   if (!ok) {
     const firstInvalid = form.querySelector(".is-invalid");
     if (firstInvalid) firstInvalid.focus({ preventScroll: false });
@@ -138,15 +125,10 @@ function validateForm(form) {
   return ok;
 }
 
-/**
- * Envia para Google Forms via fetch no-cors
- * (não dá pra ler resposta, mas salva no form).
- */
 async function submitToGoogleForms(form) {
   const action = form.getAttribute("action");
   const fd = new FormData(form);
 
-  // no-cors pra não travar no browser
   await fetch(action, {
     method: "POST",
     mode: "no-cors",
@@ -155,7 +137,7 @@ async function submitToGoogleForms(form) {
 }
 
 /* =========================
-   MENU HAMBURGER (somente mobile)
+   MENU HAMBURGER
    ========================= */
 (function initMobileMenu() {
   const menu = document.getElementById("mobileMenu");
@@ -197,7 +179,6 @@ async function submitToGoogleForms(form) {
    MODAIS
    ========================= */
 (function initModals() {
-  // Open buttons
   const openLeadBtn = document.getElementById("openLeadBtn");
   const openLeadBtn2 = document.getElementById("openLeadBtn2");
   const openCheckoutBtn = document.getElementById("openCheckoutBtn");
@@ -209,7 +190,6 @@ async function submitToGoogleForms(form) {
 
   openCheckoutBtn?.addEventListener("click", () => openModal("checkoutModal"));
   openCheckoutBtnMobile?.addEventListener("click", () => {
-    // fecha menu mobile se estiver aberto
     const mobileMenu = document.getElementById("mobileMenu");
     mobileMenu?.classList.remove("is-open");
     mobileMenu?.setAttribute("aria-hidden", "true");
@@ -218,12 +198,10 @@ async function submitToGoogleForms(form) {
 
   floatingCart?.addEventListener("click", () => openModal("checkoutModal"));
 
-  // Close buttons
   qsa("[data-close]").forEach(btn => {
     btn.addEventListener("click", () => closeModal(btn.getAttribute("data-close")));
   });
 
-  // Click outside closes
   ["leadModal", "checkoutModal"].forEach(id => {
     const m = document.getElementById(id);
     if (!m) return;
@@ -232,7 +210,6 @@ async function submitToGoogleForms(form) {
     });
   });
 
-  // ESC closes any open modal
   document.addEventListener("keydown", (e) => {
     if (e.key !== "Escape") return;
     const leadOpen = document.getElementById("leadModal")?.classList.contains("is-open");
@@ -243,7 +220,7 @@ async function submitToGoogleForms(form) {
 })();
 
 /* =========================
-   PHONE MASK (2 forms)
+   PHONE MASK
    ========================= */
 (function initPhoneMask() {
   qsa("input[data-phone]").forEach(inp => {
@@ -252,7 +229,6 @@ async function submitToGoogleForms(form) {
       const before = inp.value;
       inp.value = formatPhoneBR(inp.value);
 
-      // cuidado simples para não “pular demais” o cursor
       const after = inp.value;
       const diff = after.length - before.length;
       const next = Math.max(0, caret + diff);
@@ -269,7 +245,6 @@ async function submitToGoogleForms(form) {
   const checkoutForm = document.getElementById("checkoutForm");
   const leadSuccess = document.getElementById("leadSuccess");
 
-  // Limpa erro ao digitar
   function wireLiveValidation(form) {
     qsa("input, textarea, select", form).forEach(el => {
       el.addEventListener("input", () => {
@@ -281,7 +256,6 @@ async function submitToGoogleForms(form) {
         if (field) clearFieldError(field);
       });
       el.addEventListener("blur", () => {
-        // validações pontuais em blur
         const field = el.closest(".field");
         if (!field) return;
 
@@ -302,7 +276,6 @@ async function submitToGoogleForms(form) {
   if (leadForm) wireLiveValidation(leadForm);
   if (checkoutForm) wireLiveValidation(checkoutForm);
 
-  // Lead form
   leadForm?.addEventListener("submit", async (e) => {
     e.preventDefault();
     if (!validateForm(leadForm)) return;
@@ -310,22 +283,18 @@ async function submitToGoogleForms(form) {
     try {
       await submitToGoogleForms(leadForm);
 
-      // feedback simples (sem confusão)
       if (leadSuccess) leadSuccess.hidden = false;
 
-      // limpa campos após sucesso
       leadForm.reset();
       setTimeout(() => {
         if (leadSuccess) leadSuccess.hidden = true;
         closeModal("leadModal");
       }, 1400);
     } catch (err) {
-      // falha silenciosa: ainda assim não quebra o fluxo
       closeModal("leadModal");
     }
   });
 
-  // Checkout form: envia e redireciona direto (sem telinha intermediária)
   checkoutForm?.addEventListener("submit", async (e) => {
     e.preventDefault();
     if (!validateForm(checkoutForm)) return;
@@ -333,10 +302,8 @@ async function submitToGoogleForms(form) {
     try {
       await submitToGoogleForms(checkoutForm);
     } catch (err) {
-      // mesmo se falhar, não trava
     } finally {
       closeModal("checkoutModal");
-      // redireciona para hotmart direto
       window.location.href = HOTMART_CHECKOUT_URL;
     }
   });
@@ -377,7 +344,6 @@ async function submitToGoogleForms(form) {
    ========================= */
 (function initYouTubeEndTrigger() {
   if (!OPEN_LEAD_ON_VIDEO_END_FIRST_VISIT) {
-    // fallback: embed normal
     const holder = document.getElementById("ytPlayer");
     if (holder) {
       holder.innerHTML = `<iframe src="https://www.youtube.com/embed/${YT_VIDEO_ID}"
@@ -388,16 +354,13 @@ async function submitToGoogleForms(form) {
     return;
   }
 
-  // Só na primeira visita (ou enquanto não marcou)
   const already = localStorage.getItem(LS_VIDEO_TRIGGER_KEY) === "1";
 
-  // carrega API do YouTube
   const tag = document.createElement("script");
   tag.src = "https://www.youtube.com/iframe_api";
   document.head.appendChild(tag);
 
   window.onYouTubeIframeAPIReady = function () {
-    // cria player
     // eslint-disable-next-line no-undef
     new YT.Player("ytPlayer", {
       videoId: YT_VIDEO_ID,
