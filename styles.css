@@ -1044,23 +1044,43 @@
    CHECKOUT (Pré-formulário antes de ir para Hotmart)
    Mantém o visual do formulário anterior (mais bonito)
    ========================================================= */
+/* =========================================================
+   CHECKOUT (MODAL) — FIX DEFINITIVO NO MOBILE (iOS)
+
+   Problema: no iPhone, o conteúdo rolava dentro de .modal-body,
+   fazendo o formulário "passar por baixo" do header do modal.
+
+   Solução: o scroll passa a acontecer no container do modal (.modal)
+   e a .modal-body deixa de ter overflow. Assim o header permanece no
+   fluxo e não sobrepõe os campos.
+   (Não altera o design/estética — apenas a mecânica de scroll.)
+   ========================================================= */
 .modal-backdrop.checkout-modal .modal{
-  width: min(560px, 96%);
-  height: auto;
-  max-height: 86vh;
-  grid-template-rows: auto 1fr;
-}
-/* ✅ FIX: evita o conteúdo ficar "por baixo" do header ao rolar no mobile */
-.modal-backdrop.checkout-modal .modal{
-  overflow: auto; /* o scroll passa a acontecer no card inteiro */
+  width: min(920px, 100%);
+  height: min(82vh, 780px);
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
   display: flex;
   flex-direction: column;
+}
+
+.modal-backdrop.checkout-modal .modal-body{
+  overflow: visible;
 }
 
 .modal-backdrop.checkout-modal .modal-header.checkout-header{
   position: sticky;
   top: 0;
   z-index: 10;
+}
+
+/* FIX (mobile/iOS): ao rolar o conteúdo, ele passa por baixo do header "sticky".
+   Como o header tem fundo translúcido, o texto de trás ficava visível.
+   Deixamos o header opaco com blur leve para manter a estética e evitar sobreposição. */
+.modal-backdrop.checkout-modal .modal-header.checkout-header{
+  background: rgba(249, 249, 251, .98);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(58, 39, 95, .12);
 }
 .modal-backdrop.checkout-modal .modal-body{
   padding: 20px 18px 22px;
