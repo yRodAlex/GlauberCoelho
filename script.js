@@ -1,210 +1,175 @@
-// ✅ Troque pelo seu link real da Hotmart
-const HOTMART_CHECKOUT_URL = "https://pay.hotmart.com/SEU_LINK_AQUI";
+// Highlight do menu conforme rolagem (IntersectionObserver)
+(function () {
+  const links = Array.from(document.querySelectorAll('#navlinks a[data-target]'));
+  const sections = links
+    .map(a => document.getElementById(a.dataset.target))
+    .filter(Boolean);
 
-function qs(sel, root = document) { return root.querySelector(sel); }
-function qsa(sel, root = document) { return Array.from(root.querySelectorAll(sel)); }
+  if (!('IntersectionObserver' in window) || sections.length === 0) return;
 
-function openModal(id) {
-  const overlay = document.getElementById(id);
-  if (!overlay) return;
-  overlay.classList.add("is-open");
-  overlay.setAttribute("aria-hidden", "false");
-  document.body.style.overflow = "hidden";
-}
+  const setActive = (id) => {
+    links.forEach(a => a.classList.toggle('active', a.dataset.target === id));
+  };
 
-function closeModal(id) {
-  const overlay = document.getElementById(id);
-  if (!overlay) return;
-  overlay.classList.remove("is-open");
-  overlay.setAttribute("aria-hidden", "true");
-  document.body.style.overflow = "";
-}
+  const obs = new IntersectionObserver((entries) => {
+    const visible = entries
+      .filter(e => e.isIntersecting)
+      .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
 
-function isMobile() {
-  return window.matchMedia && window.matchMedia("(max-width: 900px)").matches;
-}
-
-/* =========================
-   Phone mask: DD 12345-6789
-   ========================= */
-function applyPhoneMask(input) {
-  const digits = input.value.replace(/\D/g, "").slice(0, 11); // 2 + 5 + 4
-  const ddd = digits.slice(0, 2);
-  const mid = digits.slice(2, 7);
-  const last = digits.slice(7, 11);
-
-  let out = "";
-  if (ddd) out += ddd;
-  if (digits.length >= 3) out += " " + mid;
-  if (digits.length >= 8) out += "-" + last;
-
-  input.value = out.trim();
-}
-
-function bindPhoneMasks() {
-  qsa(".phone-mask").forEach(inp => {
-    inp.addEventListener("input", () => applyPhoneMask(inp));
-    inp.addEventListener("blur", () => applyPhoneMask(inp));
-    inp.setAttribute("pattern", "^\\d{2}\\s\\d{5}-\\d{4}$");
-    inp.setAttribute("title", "Use o formato: DD 12345-6789");
+    if (visible?.target?.id) setActive(visible.target.id);
+  }, {
+    root: null,
+    rootMargin: `-${Math.round(parseInt(getComputedStyle(document.documentElement).getPropertyValue('--headerH')) + 10)}px 0px -60% 0px`,
+    threshold: [0.15, 0.25, 0.4, 0.6, 0.8]
   });
-}
 
-/* =========================
-   Mobile drawer
-   ========================= */
-function bindDrawer() {
-  const drawer = document.getElementById("mobileDrawer");
-  const openBtn = document.getElementById("hamburgerBtn");
-  const closeBtn = document.getElementById("closeDrawerBtn");
-  const links = document.getElementById("mobileDrawerLinks");
+  sections.forEach(sec => obs.observe(sec));
+  setActive(sections[0].id);
+})();
 
-  if (!drawer || !openBtn || !closeBtn || !links) return;
-
-  function forceCloseDesktop() {
-    // ✅ garante que no desktop o drawer nunca fique visível
-    if (!isMobile()) {
-      drawer.classList.remove("is-open");
-      drawer.setAttribute("aria-hidden", "true");
-      openBtn.setAttribute("aria-expanded", "false");
-      document.body.style.overflow = "";
+// Helpers: máscara WhatsApp (DD 12345-6789)
+function maskWhatsapp(inputEl) {
+  if (!inputEl) return;
+  inputEl.addEventListener('input', () => {
+    let v = inputEl.value.replace(/\D/g, '').slice(0, 11);
+    if (v.length <= 2) {
+      inputEl.value = v;
+      return;
     }
-  }
-
-  function open() {
-    if (!isMobile()) return; // ✅ não abre no desktop
-    drawer.classList.add("is-open");
-    drawer.setAttribute("aria-hidden", "false");
-    openBtn.setAttribute("aria-expanded", "true");
-    document.body.style.overflow = "hidden";
-  }
-
-  function close() {
-    drawer.classList.remove("is-open");
-    drawer.setAttribute("aria-hidden", "true");
-    openBtn.setAttribute("aria-expanded", "false");
-    document.body.style.overflow = "";
-  }
-
-  openBtn.addEventListener("click", () => {
-    if (drawer.classList.contains("is-open")) close();
-    else open();
-  });
-
-  closeBtn.addEventListener("click", close);
-
-  drawer.addEventListener("click", (e) => {
-    if (e.target === drawer) close();
-  });
-
-  links.addEventListener("click", (e) => {
-    const a = e.target.closest("a");
-    if (!a) return;
-    close();
-  });
-
-  window.addEventListener("resize", forceCloseDesktop);
-  forceCloseDesktop();
-
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-      close();
-      closeModal("leadModal");
-      closeModal("checkoutModal");
+    const dd = v.slice(0, 2);
+    const rest = v.slice(2);
+    if (rest.length <= 5) {
+      inputEl.value = `${dd} ${rest}`;
+    } else {
+      inputEl.value = `${dd} ${rest.slice(0, 5)}-${rest.slice(5)}`;
     }
   });
 }
 
-/* =========================
-   Modais (botões)
-   ========================= */
-function bindModals() {
-  // ✅ abre lead
-  const leadBtn = document.getElementById("openLeadBtn");
-  if (leadBtn) {
-    leadBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      openModal("leadModal");
-    });
-  }
+// Modal (open/close genérico)
+(function () {
+  const body = document.body;
 
-  // ✅ abre checkout
-  const checkoutBtn = document.getElementById("openCheckoutBtn");
-  if (checkoutBtn) {
-    checkoutBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      openModal("checkoutModal");
-    });
-  }
+  const openModal = (id) => {
+    const modal = document.getElementById(id);
+    if (!modal) return;
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+    body.style.overflow = 'hidden';
+  };
 
-  // ✅ fechar com botões data-close
-  qsa("[data-close]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const id = btn.getAttribute("data-close");
-      closeModal(id);
-    });
+  const closeModal = (id) => {
+    const modal = document.getElementById(id);
+    if (!modal) return;
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+    body.style.overflow = '';
+  };
+
+  // Botões abrir
+  const openLeadBtn = document.getElementById('openLeadBtn');
+  const openLeadBtn2 = document.getElementById('openLeadBtn2');
+  const openCheckoutBtn = document.getElementById('openCheckoutBtn');
+
+  if (openLeadBtn) openLeadBtn.addEventListener('click', () => openModal('leadModal'));
+  if (openLeadBtn2) openLeadBtn2.addEventListener('click', () => openModal('leadModal'));
+  if (openCheckoutBtn) openCheckoutBtn.addEventListener('click', () => openModal('checkoutModal'));
+
+  // Fechar
+  document.querySelectorAll('[data-close]').forEach(btn => {
+    btn.addEventListener('click', () => closeModal(btn.getAttribute('data-close')));
   });
 
-  // ✅ click fora fecha
-  qsa(".modal-overlay").forEach(overlay => {
-    overlay.addEventListener("click", (e) => {
+  // Click fora fecha
+  document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', (e) => {
       if (e.target === overlay) closeModal(overlay.id);
     });
   });
-}
 
-/* =========================
-   Submits
-   ========================= */
-function bindForms() {
-  const leadForm = document.getElementById("leadForm");
-  const leadSuccess = document.getElementById("leadSuccess");
+  // ESC fecha
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    document.querySelectorAll('.modal-overlay.is-open').forEach(m => closeModal(m.id));
+  });
 
-  if (leadForm) {
-    leadForm.addEventListener("submit", () => {
-      // envia via iframe e mostra sucesso
-      window.setTimeout(() => {
-        if (leadSuccess) leadSuccess.style.display = "block";
-        leadForm.style.display = "none";
-        window.setTimeout(() => {
-          closeModal("leadModal");
-          leadForm.reset();
-          leadForm.style.display = "";
-          if (leadSuccess) leadSuccess.style.display = "none";
-        }, 1500);
-      }, 300);
-    });
-  }
+  // Expor para debug (opcional)
+  window.openLeadModal = () => openModal('leadModal');
+  window.openCheckoutModal = () => openModal('checkoutModal');
+})();
 
-  const checkoutForm = document.getElementById("checkoutForm");
-  const checkoutSubmitBtn = document.getElementById("checkoutSubmitBtn");
+// Lead form submit (Google Forms via hidden iframe)
+(function () {
+  const form = document.getElementById('leadForm');
+  const success = document.getElementById('leadSuccess');
+  const leadWhatsapp = document.getElementById('leadWhatsapp');
+  maskWhatsapp(leadWhatsapp);
 
-  if (checkoutForm && checkoutSubmitBtn) {
-    checkoutForm.addEventListener("submit", () => {
-      checkoutSubmitBtn.disabled = true;
-      checkoutSubmitBtn.textContent = "Redirecionando...";
-      // envia pro Google Forms no iframe e redireciona logo em seguida
-      window.setTimeout(() => {
-        window.location.href = HOTMART_CHECKOUT_URL;
-      }, 500);
-    });
-  }
-}
+  if (!form) return;
 
-/* =========================
-   INIT
-   ========================= */
-document.addEventListener("DOMContentLoaded", () => {
-  // se o JS não rodar, nada abre — então garantimos init aqui
-  bindPhoneMasks();
-  bindDrawer();
-  bindModals();
-  bindForms();
+  form.addEventListener('submit', () => {
+    // mostra sucesso depois de um pequeno delay (envio acontece no iframe)
+    setTimeout(() => {
+      form.style.display = 'none';
+      if (success) success.style.display = 'block';
+    }, 300);
+  });
+})();
 
-  // ✅ segurança: garante drawer fechado por padrão sempre
-  const drawer = document.getElementById("mobileDrawer");
-  if (drawer) {
-    drawer.classList.remove("is-open");
-    drawer.setAttribute("aria-hidden", "true");
-  }
-});
+// Checkout form submit -> depois redireciona pra Hotmart
+(function () {
+  const form = document.getElementById('checkoutForm');
+  const btn = document.getElementById('checkoutSubmitBtn');
+  const checkoutWhatsapp = document.getElementById('checkoutWhatsapp');
+  maskWhatsapp(checkoutWhatsapp);
+
+  // URL HOTMART (troque pelo seu link final se precisar)
+  const HOTMART_CHECKOUT_URL = "https://pay.hotmart.com/";
+
+  if (!form) return;
+
+  form.addEventListener('submit', (e) => {
+    // deixa enviar pro Google Forms no iframe (sem sair da página)
+    // e redireciona pra Hotmart logo depois
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = "Redirecionando...";
+    }
+
+    setTimeout(() => {
+      window.location.href = HOTMART_CHECKOUT_URL;
+    }, 600);
+  });
+})();
+
+// YouTube: abrir leadModal ao terminar vídeo (primeira visita)
+(function () {
+  const key = "jw_video_modal_once";
+  const already = localStorage.getItem(key) === "1";
+  if (already) return;
+
+  // API do YouTube
+  const tag = document.createElement('script');
+  tag.src = "https://www.youtube.com/iframe_api";
+  document.head.appendChild(tag);
+
+  let player;
+  window.onYouTubeIframeAPIReady = function () {
+    try {
+      player = new YT.Player('ytPlayer', {
+        events: {
+          'onStateChange': function (event) {
+            // 0 = ended
+            if (event.data === 0) {
+              localStorage.setItem(key, "1");
+              if (window.openLeadModal) window.openLeadModal();
+            }
+          }
+        }
+      });
+    } catch (e) {
+      // se der algo, não quebra a página
+      console.warn("YT init failed", e);
+    }
+  };
+})();
