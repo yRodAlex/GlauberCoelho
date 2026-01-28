@@ -1,32 +1,53 @@
-<!doctype html>
-<html lang="pt-BR">
+<!DOCTYPE html>
+<html lang="pt-br">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Jornada Terapêutica | Autoconhecimento e Vínculos</title>
-  <meta name="description" content="Um caminho estruturado para compreender, ressignificar e reorganizar sua forma de se relacionar." />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jornada Terapêutica</title>
 
   <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
 
-  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="styles.css" />
 </head>
 
 <body>
-  <header>
-    <div class="container nav">
-      <a class="brand" href="#top">Jornada Terapêutica</a>
-      <div class="navlinks" id="navlinks">
-        <a href="#jornada" data-target="jornada">A Jornada</a>
-        <a href="#para-quem" data-target="para-quem">Para Quem</a>
-        <a href="#como-funciona" data-target="como-funciona">Como Funciona</a>
-        <a href="#facilitador" data-target="facilitador">Facilitador</a>
-      </div>
+  <header class="header">
+    <div class="container header-inner">
+      <a class="brand" href="#top" aria-label="Voltar ao topo">
+        <span class="brand-title">Jornada Terapêutica</span>
+      </a>
 
-      <!-- Botão topo -->
-      <button class="nav-cta pill btn-primary" id="openCheckoutBtn" type="button">
+      <nav class="nav" aria-label="Navegação principal">
+        <a href="#a-jornada">A Jornada</a>
+        <a href="#para-quem">Para Quem</a>
+        <a href="#como-funciona">Como Funciona</a>
+        <a href="#facilitador">Facilitador</a>
+      </nav>
+
+      <div class="header-actions">
+        <button class="btn btn-primary" id="openCheckoutBtn" type="button">
+          Garantir minha vaga
+        </button>
+
+        <button class="hamburger" id="hamburger" type="button" aria-label="Abrir menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+
+    <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+      <a href="#a-jornada" class="mobile-link">A Jornada</a>
+      <a href="#para-quem" class="mobile-link">Para Quem</a>
+      <a href="#como-funciona" class="mobile-link">Como Funciona</a>
+      <a href="#facilitador" class="mobile-link">Facilitador</a>
+
+      <button class="btn btn-primary btn-full" id="openCheckoutBtnMobile" type="button">
         Garantir minha vaga
       </button>
     </div>
@@ -35,29 +56,27 @@
   <main id="top">
     <!-- HERO -->
     <section class="hero">
-      <div class="container">
-        <div class="wrap">
-          <div>
-            <div class="kicker">Processo terapêutico estruturado</div>
-            <h1>🌿 Jornada Terapêutica de Autoconhecimento e Vínculos</h1>
-            <p>Um caminho estruturado para compreender, ressignificar e reorganizar sua forma de se relacionar.</p>
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <div class="pill">Processo terapêutico estruturado</div>
+          <h1>🌿 Jornada Terapêutica de Autoconhecimento e Vínculos</h1>
+          <p class="hero-sub">
+            Um caminho estruturado para compreender, ressignificar e reorganizar sua forma de se relacionar.
+          </p>
 
-            <div class="hero-cta">
-              <a class="pill btn-white"
-                 href="https://wa.me/5512981402217?text=Quero%20come%C3%A7ar%20a%20minha%20jornada"
-                 target="_blank" rel="noopener">Quero iniciar minha jornada</a>
-
-              <button class="pill btn-secondary" id="openLeadBtn" type="button">
-                Quero entender se é para mim
-              </button>
-            </div>
+          <div class="hero-ctas">
+            <button class="btn btn-ghost" id="openLeadBtn" type="button">Quero iniciar minha jornada</button>
+            <button class="btn btn-outline" id="openUnderstandBtn" type="button">Quero entender se é para mim</button>
           </div>
+        </div>
 
-          <div class="hero-media">
-            <div class="frame">
-              <img alt="Jornada terapêutica"
-                src="https://cdn.ailandingpage.ai/ai-landingpage/user-generate/bce083e0-057e-4db9-9a0a-625b6fbd40e7/bce083e0-057e-4db9-9a0a-625b6fbd40e7/hero/hero-main-68a306f5e44e4a4095a349a2e23168ee.png"
-                loading="lazy" />
+        <div class="hero-video">
+          <div class="video-frame">
+            <!-- coloque aqui seu vídeo embed/iframe se quiser -->
+            <div class="video-placeholder">
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
             </div>
           </div>
         </div>
@@ -65,156 +84,122 @@
     </section>
 
     <!-- A JORNADA -->
-    <section id="jornada" class="section section-compact-bottom">
-      <div class="container center">
-        <h2>A Jornada</h2>
-        <p class="sub">
-          Um acompanhamento terapêutico contínuo que te conduz do entendimento dos seus padrões emocionais à
-          ressignificação profunda da forma como você se vincula, especialmente nos relacionamentos afetivos.
+    <section class="section" id="a-jornada">
+      <div class="container">
+        <h2 class="section-title">A Jornada</h2>
+        <p class="section-sub">
+          Um acompanhamento terapêutico contínuo que te conduz do entendimento dos seus padrões emocionais à ressignificação
+          profunda da forma como você se vincula, especialmente nos relacionamentos afetivos.
         </p>
       </div>
     </section>
 
-    <!-- VIDEO -->
-    <section id="video" class="section section-compact-top"
-      style="background: linear-gradient(180deg, var(--ice), rgba(219,211,198,.20));">
-      <div class="container center">
-        <h2>Vídeo</h2>
-        <p class="sub">Assista e entenda como funciona o processo e para quem ele faz sentido.</p>
-
-        <div class="video-grid">
-          <div class="video" aria-label="Vídeo de apresentação">
-            <iframe id="ytPlayer"
-              src="https://www.youtube.com/embed/dQw4w9WgXcQ?enablejsapi=1"
-              title="Vídeo de apresentação" loading="lazy"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowfullscreen></iframe>
-          </div>
-
-          <div class="cta-pair">
-            <a class="pill btn-primary"
-               href="https://wa.me/5512981402217?text=Quero%20come%C3%A7ar%20a%20minha%20jornada"
-               target="_blank" rel="noopener">Quero iniciar minha jornada</a>
-
-            <button class="pill btn-secondary" id="openLeadBtn2" type="button">
-              Quero entender se é para mim
-            </button>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <!-- PARA QUEM -->
-    <section id="para-quem" class="section">
+    <section class="section" id="para-quem">
       <div class="container">
-        <div class="center">
-          <h2>Para quem essa jornada faz sentido</h2>
-          <p class="sub">Se você se reconhece em um ou mais pontos abaixo, esse processo pode ser o próximo passo.</p>
-        </div>
-
-        <div class="grid-2">
-          <div class="tile"><strong>Repetição de padrões</strong>
-            <p>Sentem que repetem os mesmos padrões nos relacionamentos.</p>
-          </div>
-          <div class="tile"><strong>Ansiedade nos vínculos</strong>
-            <p>Vivem ansiedade, insegurança ou afastamento emocional nos vínculos.</p>
-          </div>
-          <div class="tile"><strong>Muito conteúdo, pouca mudança</strong>
-            <p>Já consumiram muito conteúdo, mas ainda sofrem na prática.</p>
-          </div>
-          <div class="tile"><strong>Profundidade, não só insight</strong>
-            <p>Querem autoconhecimento com profundidade, não apenas insight.</p>
-          </div>
-        </div>
+        <h2 class="section-title">Para quem essa jornada faz sentido</h2>
+        <p class="section-sub">
+          Se você se reconhece em um ou mais pontos abaixo, esse processo pode ser o próximo passo.
+        </p>
       </div>
     </section>
 
     <!-- COMO FUNCIONA -->
-    <section id="como-funciona" class="section">
-      <div class="container center">
-        <h2>Como funciona na prática</h2>
-        <p class="sub">Processo estruturado, mas flexível. Acompanhamento contínuo e espaço seguro.</p>
-
-        <div class="checklist">
-          <div class="check"><span class="dot"></span>
-            <div><strong>Sessões terapêuticas semanais</strong>
-              <div class="muted">Ritmo consistente para aprofundar o processo.</div>
-            </div>
-          </div>
-          <div class="check"><span class="dot"></span>
-            <div><strong>Acompanhamento contínuo</strong>
-              <div class="muted">Não é pontual: é jornada com presença e direção.</div>
-            </div>
-          </div>
-          <div class="check"><span class="dot"></span>
-            <div><strong>Estruturado, porém flexível</strong>
-              <div class="muted">Você não entra em uma “fórmula”: entra em um caminho.</div>
-            </div>
-          </div>
-          <div class="check"><span class="dot"></span>
-            <div><strong>Ético e confidencial</strong>
-              <div class="muted">Espaço seguro, respeitoso e responsável.</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="freq">Frequência: 1 sessão por semana</div>
+    <section class="section" id="como-funciona">
+      <div class="container">
+        <h2 class="section-title">Como funciona na prática</h2>
+        <p class="section-sub">Processo estruturado, mas flexível. Acompanhamento contínuo e espaço seguro.</p>
       </div>
     </section>
 
     <!-- FACILITADOR -->
-    <section id="facilitador" class="section">
-      <div class="container center">
-        <h2>Facilitador</h2>
-        <p class="sub">Conheça o Glauber.</p>
+    <section class="section" id="facilitador">
+      <div class="container facilitator-grid">
+        <div class="card soft">
+          <h3 class="card-title">Conheça o Glauber</h3>
+          <p class="card-text">
+            Minha abordagem une fundamentos da psicologia, teoria do apego e práticas de consciência emocional,
+            sempre com acolhimento, ética e profundidade.
+          </p>
+          <p class="card-text">
+            Acredito que repetir padrões não é falta de força, mas resultado de histórias que ainda pedem
+            compreensão e reorganização.
+          </p>
+          <p class="card-text">
+            Minha missão é conduzir pessoas que se sentem presas em ciclos afetivos para um lugar de mais
+            segurança interna, clareza e presença — começando por si.
+          </p>
+          <p class="card-text">
+            Essa jornada não é sobre “consertar” você. É sobre ajudar você a se reconectar com quem sempre esteve aí.
+          </p>
+        </div>
+
+        <div class="card soft img-card">
+          <img
+            src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAoHBwgHBgoICAkLCgoLDhgQDg0NDh0VFhEYIx8lIiAdHx8kKDQsJCYxJx8fLT0tMTU3Ojo6Iys/RD84QzQ5OjcBCgoKDg0OGhAQGi0lHyU3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3N//AABEIAWgB4AMBIgACEQEDEQH/xAAbAAACAwEBAQAAAAAAAAAAAAAEBQADBgIBB//EADgQAAICAQMBBQYEBQQDAAAAAAABAgMRBBIhMQVBUWEGEyJxgZEyQrHB0RQjUmKS0fDxFVNzgpKi/8QAGQEBAQEBAQEAAAAAAAAAAAAAAAECAwQF/8QAJxEBAQEAAgICAgIDAQAAAAAAAAECEQMhEjEEE0FRYRMicaH/9oADAMBAAIRAxEAPwD8gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHtq1o8fCk2tKf3s7a9vXkqT2tWlQ8s2l5q0u7m0r7Wc8hYg2m2m9v4pWzqVv7xJ1O6k5qf9b+gZ8o4qTq0nGm+9qf9bXv7b0vYkVfQ3JbS+fP7R0uZ7o9t5o7uS2XrFQm0o2x9QqfRz3zXb2p4p0p5r6t1p1VtY3t9d3o7Zq1v8ATzv0rZcZq9r7m8fE5w0t9s7b3w3t2m+KXqk1LrT1a5rX8r8e9m6m3Vq0rXv0lJxv5uV+V6d5m7b0o5pWm9jvH9g1dWmVZ0o6mZp8l7xXrK8c0n1tq9p7m8p1b3m2t1bYv0b7f6s+U5gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP/Z"
+            alt="Glauber"
+            class="glauber-photo"
+            loading="lazy"
+          />
+        </div>
       </div>
     </section>
 
-    <footer>
-      © 2026 Jornada Terapêutica. Todos os direitos reservados.
+    <!-- CTA FINAL -->
+    <section class="section cta">
+      <div class="container cta-card">
+        <h2>Você merece viver um relacionamento saudável e excepcional.</h2>
+        <p>Autoconhecimento não é sobre saber mais. É sobre se relacionar melhor consigo e com o outro.</p>
+
+        <div class="cta-actions">
+          <button class="btn btn-primary" id="openCheckoutBtnBottom" type="button">QUERO GARANTIR MINHA VAGA</button>
+          <a class="btn btn-outline" href="#" id="whatsBtn" role="button">FALAR NO WHATSAPP</a>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="container">
+        <p>© 2026 Jornada Terapêutica. Todos os direitos reservados.</p>
+      </div>
     </footer>
   </main>
 
-  <!-- =========================================================
-       MODAL: "Quero entender se é para mim"
-       ========================================================= -->
+  <!-- Modal: Lead (Quero iniciar minha jornada) -->
   <div class="modal-overlay" id="leadModal" aria-hidden="true">
-    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="leadModalTitle">
-      <div class="modal-head">
-        <div>
-          <h3 class="modal-title" id="leadModalTitle">Vamos conversar 🌿</h3>
-          <p class="modal-subtitle">Preencha com calma. Em breve entraremos em contato.</p>
-        </div>
-        <button class="modal-close" type="button" data-close="leadModal" aria-label="Fechar">✕</button>
+    <div class="modal" role="dialog" aria-modal="true" aria-label="Vamos conversar">
+      <div class="modal-header">
+        <h3>Vamos conversar 🌿</h3>
+        <button class="modal-x" type="button" data-close="leadModal" aria-label="Fechar">×</button>
       </div>
 
       <div class="modal-body">
-        <form id="leadForm"
-          action="https://docs.google.com/forms/d/e/1FAIpQLSc343T86qOwMwLlOx4PgyKtW4hqPOBp6NPW2Hz8oXrdYvGw7g/formResponse"
-          method="POST" target="hidden_iframe_lead">
+        <p>Preencha com calma. Em breve entraremos em contato.</p>
+
+        <form id="leadForm">
           <div class="form-grid">
-            <div class="field">
-              <label>Nome completo *</label>
+            <div class="form-row">
+              <label>Nome completo <span class="req">*</span></label>
               <input name="entry.407392332" placeholder="Nome completo" required />
             </div>
 
-            <div class="field">
-              <label>Email *</label>
+            <div class="form-row">
+              <label>Email <span class="req">*</span></label>
               <input name="entry.526339929" type="email" placeholder="Email" required />
             </div>
 
-            <div class="field span-2">
-              <label>WhatsApp *</label>
-              <input name="entry.1559174376" placeholder="DD 12345-6789" required id="leadWhatsapp" />
+            <div class="form-row full">
+              <label>WhatsApp <span class="req">*</span></label>
+              <input name="entry.1559174376" placeholder="DD 12345-6789" inputmode="numeric" required />
             </div>
 
-            <div class="field span-2">
-              <label>O que você tem vivido que te fez buscar autoconhecimento? *</label>
+            <div class="form-row full">
+              <label>O que você tem vivido que te fez buscar autoconhecimento? <span class="req">*</span></label>
               <textarea name="entry.804946524" placeholder="Conte um pouco..." required></textarea>
             </div>
 
-            <div class="field span-2">
-              <label>Como prefere o contato? *</label>
+            <div class="form-row full">
+              <label>Como prefere o contato? <span class="req">*</span></label>
               <select name="entry.268953612" required>
                 <option value="" selected disabled>Selecione uma opção</option>
                 <option value="Email">Email</option>
@@ -224,65 +209,51 @@
             </div>
           </div>
 
-          <button class="pill btn-primary form-submit" type="submit">Enviar</button>
-          <p class="form-footnote">Ao enviar, você receberá nosso retorno em breve.</p>
+          <button class="btn btn-primary btn-full" type="submit">Enviar</button>
         </form>
 
-        <iframe name="hidden_iframe_lead" style="display:none"></iframe>
-
         <div class="success" id="leadSuccess" style="display:none">
-          ✨ Obrigado! <br> Em breve entraremos em contato com você.
+          ✨ Obrigado! <br /> Em breve entraremos em contato com você.
         </div>
       </div>
     </div>
   </div>
 
-  <!-- =========================================================
-       MODAL: "Garantir minha vaga" (pré-checkout)
-       ========================================================= -->
-  <div class="modal-overlay" id="checkoutModal" aria-hidden="true">
-    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="checkoutModalTitle">
-      <div class="modal-head">
-        <div>
-          <h3 class="modal-title" id="checkoutModalTitle">Garantir minha vaga ✅</h3>
-          <p class="modal-subtitle">Antes do pagamento, preencha seus dados para seguirmos com a sua inscrição.</p>
-        </div>
-        <button class="modal-close" type="button" data-close="checkoutModal" aria-label="Fechar">✕</button>
+  <!-- Modal: Understand (Quero entender se é para mim) -->
+  <div class="modal-overlay" id="understandModal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-label="Quero entender se é para mim">
+      <div class="modal-header">
+        <h3>Quero entender se é para mim 🌿</h3>
+        <button class="modal-x" type="button" data-close="understandModal" aria-label="Fechar">×</button>
       </div>
 
       <div class="modal-body">
-        <form id="checkoutForm"
-          action="https://docs.google.com/forms/d/e/1FAIpQLSdHeWEx2NfbnrxQYTne4wl72QzJPVd2lNOa1LjOS2fCyShx1A/formResponse"
-          method="POST" target="hidden_iframe_checkout">
+        <p>Responda rapidinho para sabermos como te ajudar.</p>
 
+        <form id="understandForm">
           <div class="form-grid">
-            <div class="field">
-              <label>Nome completo *</label>
+            <div class="form-row">
+              <label>Nome completo <span class="req">*</span></label>
               <input name="entry.1408784355" placeholder="Nome completo" required />
             </div>
 
-            <div class="field">
-              <label>Email *</label>
+            <div class="form-row">
+              <label>Email <span class="req">*</span></label>
               <input name="entry.224218993" type="email" placeholder="Email" required />
             </div>
 
-            <div class="field">
-              <label>CPF (opcional)</label>
-              <input name="entry.795371089" placeholder="CPF (opcional)" />
+            <div class="form-row full">
+              <label>WhatsApp <span class="req">*</span></label>
+              <input name="entry.1927941383" placeholder="DD 12345-6789" inputmode="numeric" required />
             </div>
 
-            <div class="field">
-              <label>WhatsApp *</label>
-              <input name="entry.1927941383" placeholder="DD 12345-6789" required id="checkoutWhatsapp" />
+            <div class="form-row full">
+              <label>O que você tem vivido que te fez buscar autoconhecimento? <span class="req">*</span></label>
+              <textarea name="entry.2022455327" placeholder="Conte um pouco..." required></textarea>
             </div>
 
-            <div class="field span-2">
-              <label>O que te fez buscar essa terapia? O que você deseja transformar? *</label>
-              <textarea name="entry.2022455327" placeholder="O que você deseja transformar? Conte com sinceridade." required></textarea>
-            </div>
-
-            <div class="field span-2">
-              <label>Como prefere o contato? *</label>
+            <div class="form-row full">
+              <label>Como prefere o contato? <span class="req">*</span></label>
               <select name="entry.756664464" required>
                 <option value="" selected disabled>Selecione uma opção</option>
                 <option value="Email">Email</option>
@@ -292,18 +263,69 @@
             </div>
           </div>
 
-          <button class="pill btn-primary form-submit" type="submit" id="checkoutSubmitBtn">
-            Continuar para pagamento
-          </button>
-
-          <p class="form-footnote">Ao continuar, você será direcionado(a) para o checkout da Hotmart.</p>
+          <button class="btn btn-primary btn-full" type="submit">Enviar</button>
         </form>
 
-        <iframe name="hidden_iframe_checkout" style="display:none"></iframe>
+        <div class="success" id="understandSuccess" style="display:none">
+          ✨ Obrigado! <br /> Em breve entraremos em contato com você.
+        </div>
       </div>
     </div>
   </div>
 
-  <script src="./script.js"></script>
+  <!-- Modal: Checkout (Garantir minha vaga) -->
+  <div class="modal-overlay" id="checkoutModal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-label="Garantir minha vaga">
+      <div class="modal-head">
+        <div class="modal-head-left">
+          <h3>Garantir minha vaga ✅</h3>
+          <p>Antes do pagamento, preencha seus dados para seguirmos com a sua inscrição.</p>
+        </div>
+        <button class="modal-close" type="button" data-close="checkoutModal" aria-label="Fechar">×</button>
+      </div>
+
+      <form id="checkoutForm" class="form-grid">
+        <div class="form-row">
+          <label>Nome completo <span class="req">*</span></label>
+          <input name="entry.1408784355" placeholder="Nome completo" required />
+        </div>
+
+        <div class="form-row">
+          <label>Email <span class="req">*</span></label>
+          <input name="entry.224218993" type="email" placeholder="Email" required />
+        </div>
+
+        <div class="form-row">
+          <label>CPF (opcional)</label>
+          <input name="entry.795371089" placeholder="CPF (opcional)" />
+        </div>
+
+        <div class="form-row">
+          <label>WhatsApp <span class="req">*</span></label>
+          <input name="entry.1927941383" placeholder="DD 12345-6789" inputmode="numeric" required />
+        </div>
+
+        <div class="form-row full">
+          <label>O que te fez buscar essa terapia? O que você deseja transformar? <span class="req">*</span></label>
+          <textarea name="entry.2022455327" placeholder="O que você deseja transformar? Conte com sinceridade." required></textarea>
+        </div>
+
+        <div class="form-row full">
+          <label>Como prefere o contato? <span class="req">*</span></label>
+          <select name="entry.756664464" required>
+            <option value="" selected disabled>Selecione uma opção</option>
+            <option value="Email">Email</option>
+            <option value="WhatsApp">WhatsApp</option>
+            <option value="Telefone">Telefone</option>
+          </select>
+        </div>
+
+        <button class="btn btn-primary btn-full" type="submit">Continuar para pagamento</button>
+        <p class="tiny-note">Ao continuar, você será direcionado(a) para o checkout da Hotmart.</p>
+      </form>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>

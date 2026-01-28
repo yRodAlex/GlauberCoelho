@@ -1,175 +1,233 @@
-// Highlight do menu conforme rolagem (IntersectionObserver)
-(function () {
-  const links = Array.from(document.querySelectorAll('#navlinks a[data-target]'));
-  const sections = links
-    .map(a => document.getElementById(a.dataset.target))
-    .filter(Boolean);
+// ============================
+// Helpers
+// ============================
+function lockBody(lock) {
+  document.documentElement.style.overflow = lock ? "hidden" : "";
+  document.body.style.overflow = lock ? "hidden" : "";
+}
 
-  if (!('IntersectionObserver' in window) || sections.length === 0) return;
+function openOverlay(id) {
+  const overlay = document.getElementById(id);
+  if (!overlay) return;
+  overlay.classList.add("is-open");
+  overlay.setAttribute("aria-hidden", "false");
+  lockBody(true);
+}
 
-  const setActive = (id) => {
-    links.forEach(a => a.classList.toggle('active', a.dataset.target === id));
-  };
+function closeOverlay(id) {
+  const overlay = document.getElementById(id);
+  if (!overlay) return;
+  overlay.classList.remove("is-open");
+  overlay.setAttribute("aria-hidden", "true");
+  lockBody(false);
+}
 
-  const obs = new IntersectionObserver((entries) => {
-    const visible = entries
-      .filter(e => e.isIntersecting)
-      .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+function maskPhoneBR(value) {
+  // Mantém só números
+  const digits = (value || "").replace(/\D/g, "").slice(0, 11);
 
-    if (visible?.target?.id) setActive(visible.target.id);
-  }, {
-    root: null,
-    rootMargin: `-${Math.round(parseInt(getComputedStyle(document.documentElement).getPropertyValue('--headerH')) + 10)}px 0px -60% 0px`,
-    threshold: [0.15, 0.25, 0.4, 0.6, 0.8]
-  });
+  // Formato: DD 12345-6789 (10 ou 11 dígitos depois do DDD)
+  const ddd = digits.slice(0, 2);
+  const part1 = digits.slice(2, 7);
+  const part2 = digits.slice(7, 11);
 
-  sections.forEach(sec => obs.observe(sec));
-  setActive(sections[0].id);
-})();
+  if (!ddd) return "";
+  if (!part1) return `${ddd}`;
+  if (!part2) return `${ddd} ${part1}`;
+  return `${ddd} ${part1}-${part2}`;
+}
 
-// Helpers: máscara WhatsApp (DD 12345-6789)
-function maskWhatsapp(inputEl) {
+function wirePhoneMask(inputEl) {
   if (!inputEl) return;
-  inputEl.addEventListener('input', () => {
-    let v = inputEl.value.replace(/\D/g, '').slice(0, 11);
-    if (v.length <= 2) {
-      inputEl.value = v;
-      return;
-    }
-    const dd = v.slice(0, 2);
-    const rest = v.slice(2);
-    if (rest.length <= 5) {
-      inputEl.value = `${dd} ${rest}`;
-    } else {
-      inputEl.value = `${dd} ${rest.slice(0, 5)}-${rest.slice(5)}`;
-    }
+  inputEl.addEventListener("input", (e) => {
+    const cursorEnd = inputEl.selectionEnd;
+    const before = inputEl.value;
+    inputEl.value = maskPhoneBR(inputEl.value);
+    try {
+      inputEl.setSelectionRange(cursorEnd, cursorEnd);
+    } catch {}
   });
 }
 
-// Modal (open/close genérico)
-(function () {
-  const body = document.body;
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i.test(email || "");
+}
 
-  const openModal = (id) => {
-    const modal = document.getElementById(id);
-    if (!modal) return;
-    modal.classList.add('is-open');
-    modal.setAttribute('aria-hidden', 'false');
-    body.style.overflow = 'hidden';
-  };
+async function submitToGoogleForms(formEl, actionUrl) {
+  const fd = new FormData(formEl);
 
-  const closeModal = (id) => {
-    const modal = document.getElementById(id);
-    if (!modal) return;
-    modal.classList.remove('is-open');
-    modal.setAttribute('aria-hidden', 'true');
-    body.style.overflow = '';
-  };
+  // Envio silencioso
+  await fetch(actionUrl, {
+    method: "POST",
+    mode: "no-cors",
+    body: fd,
+  });
+}
 
-  // Botões abrir
-  const openLeadBtn = document.getElementById('openLeadBtn');
-  const openLeadBtn2 = document.getElementById('openLeadBtn2');
-  const openCheckoutBtn = document.getElementById('openCheckoutBtn');
+// ============================
+// DOM Ready
+// ============================
+document.addEventListener("DOMContentLoaded", () => {
+  // Menu mobile
+  const hamburger = document.getElementById("hamburger");
+  const mobileMenu = document.getElementById("mobileMenu");
 
-  if (openLeadBtn) openLeadBtn.addEventListener('click', () => openModal('leadModal'));
-  if (openLeadBtn2) openLeadBtn2.addEventListener('click', () => openModal('leadModal'));
-  if (openCheckoutBtn) openCheckoutBtn.addEventListener('click', () => openModal('checkoutModal'));
+  if (hamburger && mobileMenu) {
+    hamburger.addEventListener("click", () => {
+      mobileMenu.classList.toggle("is-open");
+      const isOpen = mobileMenu.classList.contains("is-open");
+      mobileMenu.setAttribute("aria-hidden", String(!isOpen));
+    });
 
-  // Fechar
-  document.querySelectorAll('[data-close]').forEach(btn => {
-    btn.addEventListener('click', () => closeModal(btn.getAttribute('data-close')));
+    // Fecha menu ao clicar em links
+    mobileMenu.querySelectorAll("a").forEach((a) => {
+      a.addEventListener("click", () => {
+        mobileMenu.classList.remove("is-open");
+        mobileMenu.setAttribute("aria-hidden", "true");
+      });
+    });
+  }
+
+  // Botões que abrem modais
+  const openLeadBtn = document.getElementById("openLeadBtn");
+  const openUnderstandBtn = document.getElementById("openUnderstandBtn");
+  const openCheckoutBtn = document.getElementById("openCheckoutBtn");
+  const openCheckoutBtnMobile = document.getElementById("openCheckoutBtnMobile");
+  const openCheckoutBtnBottom = document.getElementById("openCheckoutBtnBottom");
+
+  openLeadBtn?.addEventListener("click", () => openOverlay("leadModal"));
+  openUnderstandBtn?.addEventListener("click", () => openOverlay("understandModal"));
+
+  const openCheckout = () => openOverlay("checkoutModal");
+  openCheckoutBtn?.addEventListener("click", openCheckout);
+  openCheckoutBtnMobile?.addEventListener("click", openCheckout);
+  openCheckoutBtnBottom?.addEventListener("click", openCheckout);
+
+  // Fechar modais (botão X e clique fora)
+  document.querySelectorAll("[data-close]").forEach((btn) => {
+    btn.addEventListener("click", () => closeOverlay(btn.getAttribute("data-close")));
   });
 
-  // Click fora fecha
-  document.querySelectorAll('.modal-overlay').forEach(overlay => {
-    overlay.addEventListener('click', (e) => {
-      if (e.target === overlay) closeModal(overlay.id);
+  document.querySelectorAll(".modal-overlay").forEach((overlay) => {
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) closeOverlay(overlay.id);
     });
   });
 
-  // ESC fecha
-  document.addEventListener('keydown', (e) => {
-    if (e.key !== 'Escape') return;
-    document.querySelectorAll('.modal-overlay.is-open').forEach(m => closeModal(m.id));
-  });
+  // ============================
+  // Máscara e validações (2 formulários + checkout)
+  // ============================
+  const leadForm = document.getElementById("leadForm");
+  const understandForm = document.getElementById("understandForm");
+  const checkoutForm = document.getElementById("checkoutForm");
 
-  // Expor para debug (opcional)
-  window.openLeadModal = () => openModal('leadModal');
-  window.openCheckoutModal = () => openModal('checkoutModal');
-})();
+  // Inputs WhatsApp
+  wirePhoneMask(leadForm?.querySelector('input[name="entry.1559174376"]'));
+  wirePhoneMask(understandForm?.querySelector('input[name="entry.1927941383"]'));
+  wirePhoneMask(checkoutForm?.querySelector('input[name="entry.1927941383"]'));
 
-// Lead form submit (Google Forms via hidden iframe)
-(function () {
-  const form = document.getElementById('leadForm');
-  const success = document.getElementById('leadSuccess');
-  const leadWhatsapp = document.getElementById('leadWhatsapp');
-  maskWhatsapp(leadWhatsapp);
+  // ============================
+  // Lead Form (Quero iniciar minha jornada)
+  // ============================
+  if (leadForm) {
+    leadForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-  if (!form) return;
+      const emailEl = leadForm.querySelector('input[name="entry.526339929"]');
+      if (emailEl && !isValidEmail(emailEl.value)) {
+        emailEl.focus();
+        emailEl.setCustomValidity("Digite um e-mail válido.");
+        emailEl.reportValidity();
+        emailEl.setCustomValidity("");
+        return;
+      }
 
-  form.addEventListener('submit', () => {
-    // mostra sucesso depois de um pequeno delay (envio acontece no iframe)
-    setTimeout(() => {
-      form.style.display = 'none';
-      if (success) success.style.display = 'block';
-    }, 300);
-  });
-})();
+      // Envio Google Forms (seu endpoint original)
+      const actionUrl =
+        "https://docs.google.com/forms/d/e/1FAIpQLSdHeWEx2NfbnrxQYTne4wl72QzJPVd2lNOa1LjOS2fCyShx1A/formResponse";
 
-// Checkout form submit -> depois redireciona pra Hotmart
-(function () {
-  const form = document.getElementById('checkoutForm');
-  const btn = document.getElementById('checkoutSubmitBtn');
-  const checkoutWhatsapp = document.getElementById('checkoutWhatsapp');
-  maskWhatsapp(checkoutWhatsapp);
+      try {
+        await submitToGoogleForms(leadForm, actionUrl);
+        leadForm.style.display = "none";
+        const ok = document.getElementById("leadSuccess");
+        if (ok) ok.style.display = "block";
+      } catch (err) {
+        alert("Não foi possível enviar agora. Tente novamente.");
+      }
+    });
+  }
 
-  // URL HOTMART (troque pelo seu link final se precisar)
-  const HOTMART_CHECKOUT_URL = "https://pay.hotmart.com/";
+  // ============================
+  // Understand Form (Quero entender se é para mim)
+  // ============================
+  if (understandForm) {
+    understandForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-  if (!form) return;
+      const emailEl = understandForm.querySelector('input[name="entry.224218993"]');
+      if (emailEl && !isValidEmail(emailEl.value)) {
+        emailEl.focus();
+        emailEl.setCustomValidity("Digite um e-mail válido.");
+        emailEl.reportValidity();
+        emailEl.setCustomValidity("");
+        return;
+      }
 
-  form.addEventListener('submit', (e) => {
-    // deixa enviar pro Google Forms no iframe (sem sair da página)
-    // e redireciona pra Hotmart logo depois
-    if (btn) {
-      btn.disabled = true;
-      btn.textContent = "Redirecionando...";
-    }
+      const actionUrl =
+        "https://docs.google.com/forms/d/e/1FAIpQLSdHeWEx2NfbnrxQYTne4wl72QzJPVd2lNOa1LjOS2fCyShx1A/formResponse";
 
-    setTimeout(() => {
-      window.location.href = HOTMART_CHECKOUT_URL;
-    }, 600);
-  });
-})();
+      try {
+        await submitToGoogleForms(understandForm, actionUrl);
+        understandForm.style.display = "none";
+        const ok = document.getElementById("understandSuccess");
+        if (ok) ok.style.display = "block";
+      } catch (err) {
+        alert("Não foi possível enviar agora. Tente novamente.");
+      }
+    });
+  }
 
-// YouTube: abrir leadModal ao terminar vídeo (primeira visita)
-(function () {
-  const key = "jw_video_modal_once";
-  const already = localStorage.getItem(key) === "1";
-  if (already) return;
+  // ============================
+  // Checkout Form (Garantir minha vaga) -> redireciona para Hotmart
+  // ============================
+  if (checkoutForm) {
+    checkoutForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-  // API do YouTube
-  const tag = document.createElement('script');
-  tag.src = "https://www.youtube.com/iframe_api";
-  document.head.appendChild(tag);
+      const emailEl = checkoutForm.querySelector('input[name="entry.224218993"]');
+      if (emailEl && !isValidEmail(emailEl.value)) {
+        emailEl.focus();
+        emailEl.setCustomValidity("Digite um e-mail válido.");
+        emailEl.reportValidity();
+        emailEl.setCustomValidity("");
+        return;
+      }
 
-  let player;
-  window.onYouTubeIframeAPIReady = function () {
-    try {
-      player = new YT.Player('ytPlayer', {
-        events: {
-          'onStateChange': function (event) {
-            // 0 = ended
-            if (event.data === 0) {
-              localStorage.setItem(key, "1");
-              if (window.openLeadModal) window.openLeadModal();
-            }
-          }
-        }
-      });
-    } catch (e) {
-      // se der algo, não quebra a página
-      console.warn("YT init failed", e);
-    }
-  };
-})();
+      const actionUrl =
+        "https://docs.google.com/forms/d/e/1FAIpQLSdHeWEx2NfbnrxQYTne4wl72QzJPVd2lNOa1LjOS2fCyShx1A/formResponse";
+
+      try {
+        await submitToGoogleForms(checkoutForm, actionUrl);
+
+        // ✅ aqui você coloca a URL do checkout Hotmart
+        // Exemplo (troque pela sua):
+        const HOTMART_CHECKOUT_URL = "https://pay.hotmart.com/SEU_CHECKOUT_AQUI";
+        window.location.href = HOTMART_CHECKOUT_URL;
+      } catch (err) {
+        alert("Não foi possível enviar agora. Tente novamente.");
+      }
+    });
+  }
+
+  // WhatsApp CTA (se quiser colocar link real)
+  const whatsBtn = document.getElementById("whatsBtn");
+  if (whatsBtn) {
+    whatsBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      // troque pelo número e mensagem:
+      const phone = "5500000000000";
+      const msg = encodeURIComponent("Olá! Quero saber mais sobre a Jornada Terapêutica.");
+      window.open(`https://wa.me/${phone}?text=${msg}`, "_blank");
+    });
+  }
+});
