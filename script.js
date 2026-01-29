@@ -1,233 +1,400 @@
-// ============================
-// Helpers
-// ============================
-function lockBody(lock) {
-  document.documentElement.style.overflow = lock ? "hidden" : "";
-  document.body.style.overflow = lock ? "hidden" : "";
+/* =========================
+   CONFIGURAÇÕES
+   ========================= */
+
+// ⚠️ Coloque aqui o link do checkout da Hotmart (o seu real).
+const HOTMART_CHECKOUT_URL = "https://pay.hotmart.com/SEU_LINK_AQUI";
+
+/* YouTube video ID (troque se quiser) */
+const YT_VIDEO_ID = "dQw4w9WgXcQ"; // você pode trocar
+
+/* Abrir lead form ao terminar vídeo (somente 1ª visita) */
+const OPEN_LEAD_ON_VIDEO_END_FIRST_VISIT = true;
+const LS_VIDEO_TRIGGER_KEY = "leadModalShownAfterVideo";
+
+/* =========================
+   HELPERS
+   ========================= */
+
+function qs(sel, el = document) { return el.querySelector(sel); }
+function qsa(sel, el = document) { return Array.from(el.querySelectorAll(sel)); }
+
+function openModal(id) {
+  const m = document.getElementById(id);
+  if (!m) return;
+  m.classList.add("is-open");
+  m.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
 }
 
-function openOverlay(id) {
-  const overlay = document.getElementById(id);
-  if (!overlay) return;
-  overlay.classList.add("is-open");
-  overlay.setAttribute("aria-hidden", "false");
-  lockBody(true);
-}
-
-function closeOverlay(id) {
-  const overlay = document.getElementById(id);
-  if (!overlay) return;
-  overlay.classList.remove("is-open");
-  overlay.setAttribute("aria-hidden", "true");
-  lockBody(false);
-}
-
-function maskPhoneBR(value) {
-  // Mantém só números
-  const digits = (value || "").replace(/\D/g, "").slice(0, 11);
-
-  // Formato: DD 12345-6789 (10 ou 11 dígitos depois do DDD)
-  const ddd = digits.slice(0, 2);
-  const part1 = digits.slice(2, 7);
-  const part2 = digits.slice(7, 11);
-
-  if (!ddd) return "";
-  if (!part1) return `${ddd}`;
-  if (!part2) return `${ddd} ${part1}`;
-  return `${ddd} ${part1}-${part2}`;
-}
-
-function wirePhoneMask(inputEl) {
-  if (!inputEl) return;
-  inputEl.addEventListener("input", (e) => {
-    const cursorEnd = inputEl.selectionEnd;
-    const before = inputEl.value;
-    inputEl.value = maskPhoneBR(inputEl.value);
-    try {
-      inputEl.setSelectionRange(cursorEnd, cursorEnd);
-    } catch {}
-  });
+function closeModal(id) {
+  const m = document.getElementById(id);
+  if (!m) return;
+  m.classList.remove("is-open");
+  m.setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
 }
 
 function isValidEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i.test(email || "");
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(email || "").trim());
 }
 
-async function submitToGoogleForms(formEl, actionUrl) {
-  const fd = new FormData(formEl);
+function formatPhoneBR(value) {
+  const digits = (value || "").replace(/\D/g, "").slice(0, 11);
+  const ddd = digits.slice(0, 2);
+  const mid = digits.slice(2, 7);
+  const tail = digits.slice(7, 11);
+  let out = "";
 
-  // Envio silencioso
-  await fetch(actionUrl, {
+  if (ddd.length) out += ddd;
+  if (digits.length > 2) out += " " + mid;
+  if (digits.length > 7) out += "-" + tail;
+
+  return out.trim();
+}
+
+function setFieldError(fieldEl, msg) {
+  const input = fieldEl.querySelector("input, textarea, select");
+  const small = fieldEl.querySelector(".error");
+  if (input) input.classList.add("is-invalid");
+  if (small) small.textContent = msg || "Campo obrigatório";
+}
+
+function clearFieldError(fieldEl) {
+  const input = fieldEl.querySelector("input, textarea, select");
+  const small = fieldEl.querySelector(".error");
+  if (input) input.classList.remove("is-invalid");
+  if (small) small.textContent = "";
+}
+
+function validateForm(form) {
+  let ok = true;
+  const fields = qsa(".field", form);
+
+  fields.forEach(f => {
+    clearFieldError(f);
+
+    const el = f.querySelector("input, textarea, select");
+    if (!el) return;
+
+    const required = el.hasAttribute("required");
+    const val = (el.value || "").trim();
+
+    if (required && !val) {
+      ok = false;
+      setFieldError(f, "Campo obrigatório");
+      return;
+    }
+
+    if (el.type === "email" && val) {
+      if (!isValidEmail(val)) {
+        ok = false;
+        setFieldError(f, "Digite um email válido");
+        return;
+      }
+    }
+
+    if (el.dataset.phone !== undefined && val) {
+      const digits = val.replace(/\D/g, "");
+      if (digits.length < 10) {
+        ok = false;
+        setFieldError(f, "Use o formato: DD 12345-6789");
+        return;
+      }
+      if (digits.length !== 11 && digits.length !== 10) {
+        ok = false;
+        setFieldError(f, "Use o formato: DD 12345-6789");
+        return;
+      }
+    }
+
+    if (el.tagName === "SELECT" && required) {
+      if (!val) {
+        ok = false;
+        setFieldError(f, "Selecione uma opção");
+        return;
+      }
+    }
+  });
+
+  if (!ok) {
+    const firstInvalid = form.querySelector(".is-invalid");
+    if (firstInvalid) firstInvalid.focus({ preventScroll: false });
+  }
+
+  return ok;
+}
+
+async function submitToGoogleForms(form) {
+  const action = form.getAttribute("action");
+  const fd = new FormData(form);
+
+  await fetch(action, {
     method: "POST",
     mode: "no-cors",
-    body: fd,
+    body: fd
   });
 }
 
-// ============================
-// DOM Ready
-// ============================
-document.addEventListener("DOMContentLoaded", () => {
-  // Menu mobile
-  const hamburger = document.getElementById("hamburger");
-  const mobileMenu = document.getElementById("mobileMenu");
+/* =========================
+   MENU HAMBURGER
+   ========================= */
+(function initMobileMenu() {
+  const menu = document.getElementById("mobileMenu");
+  const btn = document.getElementById("hamburgerBtn");
+  const closeBtn = document.getElementById("closeMobileMenu");
 
-  if (hamburger && mobileMenu) {
-    hamburger.addEventListener("click", () => {
-      mobileMenu.classList.toggle("is-open");
-      const isOpen = mobileMenu.classList.contains("is-open");
-      mobileMenu.setAttribute("aria-hidden", String(!isOpen));
+  if (!menu || !btn || !closeBtn) return;
+
+  function open() {
+    menu.classList.add("is-open");
+    menu.setAttribute("aria-hidden", "false");
+    btn.setAttribute("aria-expanded", "true");
+    document.body.style.overflow = "hidden";
+  }
+  function close() {
+    menu.classList.remove("is-open");
+    menu.setAttribute("aria-hidden", "true");
+    btn.setAttribute("aria-expanded", "false");
+    document.body.style.overflow = "";
+  }
+
+  btn.addEventListener("click", open);
+  closeBtn.addEventListener("click", close);
+
+  menu.addEventListener("click", (e) => {
+    if (e.target === menu) close();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && menu.classList.contains("is-open")) close();
+  });
+
+  qsa(".mobileLink", menu).forEach(a => {
+    a.addEventListener("click", () => close());
+  });
+})();
+
+/* =========================
+   MODAIS
+   ========================= */
+(function initModals() {
+  const openLeadBtn = document.getElementById("openLeadBtn");
+  const openLeadBtn2 = document.getElementById("openLeadBtn2");
+  const openCheckoutBtn = document.getElementById("openCheckoutBtn");
+  const openCheckoutBtnMobile = document.getElementById("openCheckoutBtnMobile");
+  const floatingCart = document.getElementById("floatingCart");
+
+  openLeadBtn?.addEventListener("click", () => openModal("leadModal"));
+  openLeadBtn2?.addEventListener("click", () => openModal("leadModal"));
+
+  openCheckoutBtn?.addEventListener("click", () => openModal("checkoutModal"));
+  openCheckoutBtnMobile?.addEventListener("click", () => {
+    const mobileMenu = document.getElementById("mobileMenu");
+    mobileMenu?.classList.remove("is-open");
+    mobileMenu?.setAttribute("aria-hidden", "true");
+    openModal("checkoutModal");
+  });
+
+  floatingCart?.addEventListener("click", () => openModal("checkoutModal"));
+
+  qsa("[data-close]").forEach(btn => {
+    btn.addEventListener("click", () => closeModal(btn.getAttribute("data-close")));
+  });
+
+  ["leadModal", "checkoutModal"].forEach(id => {
+    const m = document.getElementById(id);
+    if (!m) return;
+    m.addEventListener("click", (e) => {
+      if (e.target === m) closeModal(id);
     });
+  });
 
-    // Fecha menu ao clicar em links
-    mobileMenu.querySelectorAll("a").forEach((a) => {
-      a.addEventListener("click", () => {
-        mobileMenu.classList.remove("is-open");
-        mobileMenu.setAttribute("aria-hidden", "true");
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    const leadOpen = document.getElementById("leadModal")?.classList.contains("is-open");
+    const checkoutOpen = document.getElementById("checkoutModal")?.classList.contains("is-open");
+    if (leadOpen) closeModal("leadModal");
+    if (checkoutOpen) closeModal("checkoutModal");
+  });
+})();
+
+/* =========================
+   PHONE MASK
+   ========================= */
+(function initPhoneMask() {
+  qsa("input[data-phone]").forEach(inp => {
+    inp.addEventListener("input", () => {
+      const caret = inp.selectionStart || 0;
+      const before = inp.value;
+      inp.value = formatPhoneBR(inp.value);
+
+      const after = inp.value;
+      const diff = after.length - before.length;
+      const next = Math.max(0, caret + diff);
+      inp.setSelectionRange(next, next);
+    });
+  });
+})();
+
+/* =========================
+   SUBMIT FORMS
+   ========================= */
+(function initForms() {
+  const leadForm = document.getElementById("leadForm");
+  const checkoutForm = document.getElementById("checkoutForm");
+  const leadSuccess = document.getElementById("leadSuccess");
+
+  function wireLiveValidation(form) {
+    qsa("input, textarea, select", form).forEach(el => {
+      el.addEventListener("input", () => {
+        const field = el.closest(".field");
+        if (field) clearFieldError(field);
+      });
+      el.addEventListener("change", () => {
+        const field = el.closest(".field");
+        if (field) clearFieldError(field);
+      });
+      el.addEventListener("blur", () => {
+        const field = el.closest(".field");
+        if (!field) return;
+
+        if (el.type === "email" && el.value.trim() && !isValidEmail(el.value)) {
+          setFieldError(field, "Digite um email válido");
+        }
+
+        if (el.dataset.phone !== undefined && el.value.trim()) {
+          const digits = el.value.replace(/\D/g, "");
+          if (digits.length !== 10 && digits.length !== 11) {
+            setFieldError(field, "Use o formato: DD 12345-6789");
+          }
+        }
       });
     });
   }
 
-  // Botões que abrem modais
-  const openLeadBtn = document.getElementById("openLeadBtn");
-  const openUnderstandBtn = document.getElementById("openUnderstandBtn");
-  const openCheckoutBtn = document.getElementById("openCheckoutBtn");
-  const openCheckoutBtnMobile = document.getElementById("openCheckoutBtnMobile");
-  const openCheckoutBtnBottom = document.getElementById("openCheckoutBtnBottom");
+  if (leadForm) wireLiveValidation(leadForm);
+  if (checkoutForm) wireLiveValidation(checkoutForm);
 
-  openLeadBtn?.addEventListener("click", () => openOverlay("leadModal"));
-  openUnderstandBtn?.addEventListener("click", () => openOverlay("understandModal"));
+  leadForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!validateForm(leadForm)) return;
 
-  const openCheckout = () => openOverlay("checkoutModal");
-  openCheckoutBtn?.addEventListener("click", openCheckout);
-  openCheckoutBtnMobile?.addEventListener("click", openCheckout);
-  openCheckoutBtnBottom?.addEventListener("click", openCheckout);
+    try {
+      await submitToGoogleForms(leadForm);
 
-  // Fechar modais (botão X e clique fora)
-  document.querySelectorAll("[data-close]").forEach((btn) => {
-    btn.addEventListener("click", () => closeOverlay(btn.getAttribute("data-close")));
+      if (leadSuccess) leadSuccess.hidden = false;
+
+      leadForm.reset();
+      setTimeout(() => {
+        if (leadSuccess) leadSuccess.hidden = true;
+        closeModal("leadModal");
+      }, 1400);
+    } catch (err) {
+      closeModal("leadModal");
+    }
   });
 
-  document.querySelectorAll(".modal-overlay").forEach((overlay) => {
-    overlay.addEventListener("click", (e) => {
-      if (e.target === overlay) closeOverlay(overlay.id);
-    });
+  checkoutForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!validateForm(checkoutForm)) return;
+
+    try {
+      await submitToGoogleForms(checkoutForm);
+    } catch (err) {
+    } finally {
+      closeModal("checkoutModal");
+      window.location.href = HOTMART_CHECKOUT_URL;
+    }
+  });
+})();
+
+/* =========================
+   ACTIVE MENU (desktop)
+   ========================= */
+(function navHighlight() {
+  const links = Array.from(document.querySelectorAll('#navlinks a[data-target]'));
+  const sections = links.map(a => document.getElementById(a.dataset.target)).filter(Boolean);
+  if (!('IntersectionObserver' in window) || sections.length === 0) return;
+
+  const setActive = (id) => {
+    links.forEach(a => a.classList.toggle('active', a.dataset.target === id));
+  };
+
+  const headerH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--headerH')) || 76;
+
+  const obs = new IntersectionObserver((entries) => {
+    const visible = entries
+      .filter(e => e.isIntersecting)
+      .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+    if (visible?.target?.id) setActive(visible.target.id);
+  }, {
+    root: null,
+    rootMargin: `-${Math.round(headerH + 10)}px 0px -60% 0px`,
+    threshold: [0.15, 0.25, 0.4, 0.6, 0.8]
   });
 
-  // ============================
-  // Máscara e validações (2 formulários + checkout)
-  // ============================
-  const leadForm = document.getElementById("leadForm");
-  const understandForm = document.getElementById("understandForm");
-  const checkoutForm = document.getElementById("checkoutForm");
+  sections.forEach(sec => obs.observe(sec));
+  setActive(sections[0].id);
+})();
 
-  // Inputs WhatsApp
-  wirePhoneMask(leadForm?.querySelector('input[name="entry.1559174376"]'));
-  wirePhoneMask(understandForm?.querySelector('input[name="entry.1927941383"]'));
-  wirePhoneMask(checkoutForm?.querySelector('input[name="entry.1927941383"]'));
-
-  // ============================
-  // Lead Form (Quero iniciar minha jornada)
-  // ============================
-  if (leadForm) {
-    leadForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const emailEl = leadForm.querySelector('input[name="entry.526339929"]');
-      if (emailEl && !isValidEmail(emailEl.value)) {
-        emailEl.focus();
-        emailEl.setCustomValidity("Digite um e-mail válido.");
-        emailEl.reportValidity();
-        emailEl.setCustomValidity("");
-        return;
-      }
-
-      // Envio Google Forms (seu endpoint original)
-      const actionUrl =
-        "https://docs.google.com/forms/d/e/1FAIpQLSdHeWEx2NfbnrxQYTne4wl72QzJPVd2lNOa1LjOS2fCyShx1A/formResponse";
-
-      try {
-        await submitToGoogleForms(leadForm, actionUrl);
-        leadForm.style.display = "none";
-        const ok = document.getElementById("leadSuccess");
-        if (ok) ok.style.display = "block";
-      } catch (err) {
-        alert("Não foi possível enviar agora. Tente novamente.");
-      }
-    });
+/* =========================
+   YOUTUBE: abrir lead modal ao terminar (1ª visita)
+   ========================= */
+(function initYouTubeEndTrigger() {
+  if (!OPEN_LEAD_ON_VIDEO_END_FIRST_VISIT) {
+    const holder = document.getElementById("ytPlayer");
+    if (holder) {
+      holder.innerHTML = `<iframe src="https://www.youtube.com/embed/${YT_VIDEO_ID}"
+        title="Vídeo de apresentação" loading="lazy"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen></iframe>`;
+    }
+    return;
   }
 
-  // ============================
-  // Understand Form (Quero entender se é para mim)
-  // ============================
-  if (understandForm) {
-    understandForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
+  const already = localStorage.getItem(LS_VIDEO_TRIGGER_KEY) === "1";
 
-      const emailEl = understandForm.querySelector('input[name="entry.224218993"]');
-      if (emailEl && !isValidEmail(emailEl.value)) {
-        emailEl.focus();
-        emailEl.setCustomValidity("Digite um e-mail válido.");
-        emailEl.reportValidity();
-        emailEl.setCustomValidity("");
-        return;
-      }
+  const tag = document.createElement("script");
+  tag.src = "https://www.youtube.com/iframe_api";
+  document.head.appendChild(tag);
 
-      const actionUrl =
-        "https://docs.google.com/forms/d/e/1FAIpQLSdHeWEx2NfbnrxQYTne4wl72QzJPVd2lNOa1LjOS2fCyShx1A/formResponse";
-
-      try {
-        await submitToGoogleForms(understandForm, actionUrl);
-        understandForm.style.display = "none";
-        const ok = document.getElementById("understandSuccess");
-        if (ok) ok.style.display = "block";
-      } catch (err) {
-        alert("Não foi possível enviar agora. Tente novamente.");
+  window.onYouTubeIframeAPIReady = function () {
+    // eslint-disable-next-line no-undef
+    new YT.Player("ytPlayer", {
+      videoId: YT_VIDEO_ID,
+      playerVars: {
+        rel: 0,
+        modestbranding: 1
+      },
+      events: {
+        onStateChange: (event) => {
+          // eslint-disable-next-line no-undef
+          if (event.data === YT.PlayerState.ENDED) {
+            if (!already) {
+              localStorage.setItem(LS_VIDEO_TRIGGER_KEY, "1");
+              openModal("leadModal");
+            }
+          }
+        }
       }
     });
+  };
+})();
+
+
+function ajustarScrollModal() {
+  const header = document.querySelector('.modal-header');
+  const body = document.querySelector('.modal-body');
+
+  if (header && body) {
+    body.style.paddingTop = header.offsetHeight + 12 + 'px';
   }
+}
 
-  // ============================
-  // Checkout Form (Garantir minha vaga) -> redireciona para Hotmart
-  // ============================
-  if (checkoutForm) {
-    checkoutForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
 
-      const emailEl = checkoutForm.querySelector('input[name="entry.224218993"]');
-      if (emailEl && !isValidEmail(emailEl.value)) {
-        emailEl.focus();
-        emailEl.setCustomValidity("Digite um e-mail válido.");
-        emailEl.reportValidity();
-        emailEl.setCustomValidity("");
-        return;
-      }
-
-      const actionUrl =
-        "https://docs.google.com/forms/d/e/1FAIpQLSdHeWEx2NfbnrxQYTne4wl72QzJPVd2lNOa1LjOS2fCyShx1A/formResponse";
-
-      try {
-        await submitToGoogleForms(checkoutForm, actionUrl);
-
-        // ✅ aqui você coloca a URL do checkout Hotmart
-        // Exemplo (troque pela sua):
-        const HOTMART_CHECKOUT_URL = "https://pay.hotmart.com/SEU_CHECKOUT_AQUI";
-        window.location.href = HOTMART_CHECKOUT_URL;
-      } catch (err) {
-        alert("Não foi possível enviar agora. Tente novamente.");
-      }
-    });
-  }
-
-  // WhatsApp CTA (se quiser colocar link real)
-  const whatsBtn = document.getElementById("whatsBtn");
-  if (whatsBtn) {
-    whatsBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      // troque pelo número e mensagem:
-      const phone = "5500000000000";
-      const msg = encodeURIComponent("Olá! Quero saber mais sobre a Jornada Terapêutica.");
-      window.open(`https://wa.me/${phone}?text=${msg}`, "_blank");
-    });
-  }
+openModalBtn.addEventListener('click', () => {
+  modal.classList.add('open');
+  ajustarScrollModal();
 });
