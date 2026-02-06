@@ -16,7 +16,7 @@
   <!-- HEADER -->
   <header class="header">
     <div class="wrap header-inner">
-      <button class="hamburger" id="hamburgerBtn" aria-label="Abrir menu">
+      <button class="hamburger" id="hamburgerBtn" aria-label="Abrir menu" aria-expanded="false" aria-controls="navLinks">
         <span></span><span></span><span></span>
       </button>
 
@@ -35,21 +35,23 @@
 
   <!-- HERO -->
   <section class="hero">
-    <div class="wrap">
+    <div class="wrap hero-grid">
       <div class="hero-copy">
         <span class="pill">Processo terapêutico estruturado</span>
         <h1><span class="leaf">🌿</span> Jornada Terapêutica de Autoconhecimento e Vínculos</h1>
         <p>Um caminho estruturado para compreender, ressignificar e reorganizar sua forma de se relacionar.</p>
+
+        <div class="hero-cta">
+          <button class="btn primary" id="openLeadBtn" type="button">Quero iniciar minha jornada</button>
+          <button class="btn outline" id="openLead2Btn" type="button">Quero entender se é para mim</button>
+        </div>
       </div>
+
       <div class="hero-media">
         <div class="frame">
           <div class="video-embed" id="ytPlayer" aria-label="Vídeo da Jornada"></div>
         </div>
       </div>
-      <div class="hero-cta">
-          <button class="btn primary" id="openLeadBtn" type="button">Quero iniciar minha jornada</button>
-          <button class="btn outline" id="openLead2Btn" type="button">Quero entender se é para mim</button>
-        </div>
     </div>
   </section>
 
@@ -136,7 +138,10 @@
       </div>
       <div class="cta-row">
         <button class="btn primary" id="openPreCheckoutBtn2" type="button">QUERO GARANTIR MINHA VAGA</button>
-        <a class="btn outline" href="#" id="whatsBtn" target="_blank" rel="noopener">FALAR NO WHATSAPP</a>
+        <a class="btn whatsapp" href="#" id="whatsBtn" target="_blank" rel="noopener"><svg class="wa-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+  <path fill="currentColor" d="M21 11.5a8.5 8.5 0 0 1-12.7 7.3L3 20l1.2-4A8.5 8.5 0 1 1 21 11.5Z"/>
+  <path fill="currentColor" d="M14.6 13.7l-1.1 1.1c-1.9-.9-3.3-2.3-4.2-4.2l1.1-1.1c.2-.2.3-.5.2-.8l-.6-1.6c-.1-.3-.4-.5-.7-.5H8.3c-.4 0-.8.4-.8.8 0 4.7 3.8 8.5 8.5 8.5.4 0 .8-.4.8-.8v-1c0-.3-.2-.6-.5-.7l-1.6-.6c-.3-.1-.6 0-.8.2z"/>
+</svg><span>FALAR NO WHATSAPP</span></a>
       </div>
     </div>
   </section>
@@ -149,9 +154,9 @@
 
   <!-- MODAL 1: LEAD -->
   <div class="modal-overlay" id="leadModal" aria-hidden="true">
-    <div class="modal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="leadTitle">
       <div class="modal-head">
-        <h3>Vamos conversar 🌿</h3>
+        <h3 id="leadTitle">Vamos conversar 🌿</h3>
         <button class="modal-close" data-close="leadModal" aria-label="Fechar">×</button>
       </div>
 
@@ -206,11 +211,11 @@
     </div>
   </div>
 
-  <!-- MODAL 2: PRE-CHECKOUT -->
+  <!-- MODAL 2: PRE-CHECKOUT (mantido no código, mas os botões agora vão direto para a Hotmart) -->
   <div class="modal-overlay" id="preCheckoutModal" aria-hidden="true">
-    <div class="modal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="preTitle">
       <div class="modal-head">
-        <h3>Garantir minha vaga ✅</h3>
+        <h3 id="preTitle">Garantir minha vaga ✅</h3>
         <button class="modal-close" data-close="preCheckoutModal" aria-label="Fechar">×</button>
       </div>
 
